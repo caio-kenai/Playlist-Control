@@ -53,6 +53,10 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/ecosystem/Ecosystem.cpp
     src/ecosystem/Origin.h
     src/ecosystem/Origin.cpp
+    src/catalog/CodeCatalog.h
+    src/catalog/CodeCatalog.cpp
+    src/validation/Validators.h
+    src/validation/Validators.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -68,4 +72,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/ScheduleTests.cpp
     tests/XmlFormatTests.cpp
     tests/DataFormatTests.cpp
+    tests/ValidationTests.cpp
 )
