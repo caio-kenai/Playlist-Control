@@ -439,7 +439,7 @@ public:
                 case ItemStatus::unknownCode:   text = L"O código não está registrado. O Playlist mostra um X vermelho e o item não vai ao ar."; break;
                 case ItemStatus::outOfValidity: text = L"O registro existe, mas está fora da validade nesta data. O item não vai ao ar."; break;
                 case ItemStatus::fileMissing:   text = L"Arquivo não encontrado nas pastas cadastradas: " + r.description; break;
-                case ItemStatus::notChecked:    text = it.kind == ItemKind::command ? juce::String (L"Comando entre < >; não verificado pelo PlaylistControl.")
+                case ItemStatus::notChecked:    text = it.kind == ItemKind::command ? juce::String (L"Comando entre < >; não verificado pelo Playlist Control.")
                                                                                    : juce::String (L"Item vazio."); break;
             }
             if (! r.foundIn.isEmpty())

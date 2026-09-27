@@ -67,7 +67,7 @@ void Workspace::loadAll()
         d.file = f;
         d.message = what;
         d.reason = L"O arquivo não pôde ser interpretado; as telas que dependem dele ficam indisponíveis.";
-        d.fix = L"Confira o arquivo no programa que o gera. O PlaylistControl não altera arquivos que não consegue ler.";
+        d.fix = L"Confira o arquivo no programa que o gera. O Playlist Control não altera arquivos que não consegue ler.";
         loadProblems_.add (d);
         Logger::instance().warning ("load.failed", what, { { "file", f.getFullPathName() } });
     };

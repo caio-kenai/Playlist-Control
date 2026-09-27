@@ -17,11 +17,11 @@ BEGIN
         BLOCK "041604b0"
         BEGIN
             VALUE "CompanyName",      "Caio Pacifico"
-            VALUE "FileDescription",  "PlaylistControl"
+            VALUE "FileDescription",  "Playlist Control"
             VALUE "FileVersion",      PLAYLISTCONTROL_VERSION_STRING
             VALUE "InternalName",     "PlaylistControl"
             VALUE "OriginalFilename", "PlaylistControl.exe"
-            VALUE "ProductName",      "PlaylistControl"
+            VALUE "ProductName",      "Playlist Control"
             VALUE "ProductVersion",   PLAYLISTCONTROL_VERSION_STRING
         END
     END

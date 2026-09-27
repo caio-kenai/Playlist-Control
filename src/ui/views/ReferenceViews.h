@@ -79,7 +79,7 @@ class HistoryView : public View
 public:
     explicit HistoryView (AppContext& context);
     juce::String title() const override { return L"Histórico de alterações"; }
-    juce::String subtitle() const override { return L"Cada gravação feita pelo PlaylistControl, com cópia do estado anterior"; }
+    juce::String subtitle() const override { return L"Cada gravação feita pelo Playlist Control, com cópia do estado anterior"; }
     void refresh() override;
     void paint (juce::Graphics& g) override;
     void resized() override;

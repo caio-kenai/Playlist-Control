@@ -352,7 +352,7 @@ void DiagnosticsView::openInEditor (const Diagnostic& d)
     else if (name == "folders.xml" || name == "ligacao.dbf")
         ctx.navigate (ViewId::folders, {}, 0);
     else
-        inform (L"Arquivo sem editor", d.file.getFullPathName() + L"\n\nEste arquivo é gerado por outro programa e é apenas verificado pelo PlaylistControl.");
+        inform (L"Arquivo sem editor", d.file.getFullPathName() + L"\n\nEste arquivo é gerado por outro programa e é apenas verificado pelo Playlist Control.");
 }
 
 void DiagnosticsView::openFile (const juce::File& file, int line)

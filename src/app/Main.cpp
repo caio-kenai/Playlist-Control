@@ -16,7 +16,7 @@ class MainWindow : public juce::DocumentWindow
 {
 public:
     MainWindow (pc::Workspace& workspace, pc::AppSettings& settings)
-        : juce::DocumentWindow ("PlaylistControl", pc::theme::colours::background, juce::DocumentWindow::allButtons)
+        : juce::DocumentWindow ("Playlist Control", pc::theme::colours::background, juce::DocumentWindow::allButtons)
     {
         setUsingNativeTitleBar (true);
         auto* content = new pc::ui::MainComponent (workspace, settings);
@@ -129,7 +129,7 @@ int renderScreenshots (const juce::ArgumentList& args)
 class PlaylistControlApplication : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override { return "PlaylistControl"; }
+    const juce::String getApplicationName() override { return "Playlist Control"; }
     const juce::String getApplicationVersion() override { return PLAYLISTCONTROL_VERSION_STRING; }
     bool moreThanOneInstanceAllowed() override { return false; }
 
@@ -146,7 +146,7 @@ public:
         }
 
         pc::Logger::instance().open (pc::AppSettings::logFolder());
-        pc::Logger::instance().info ("app.start", juce::String ("PlaylistControl ") + PLAYLISTCONTROL_VERSION_STRING,
+        pc::Logger::instance().info ("app.start", juce::String ("Playlist Control ") + PLAYLISTCONTROL_VERSION_STRING,
                                      { { "user", juce::SystemStats::getLogonName() }, { "machine", juce::SystemStats::getComputerName() } });
 
         workspace_ = std::make_unique<pc::Workspace> (pc::AppSettings::historyFolder());
@@ -178,7 +178,7 @@ public:
         if (workspace_ != nullptr)
             workspace_->close();
         workspace_.reset();
-        pc::Logger::instance().info ("app.stop", "PlaylistControl encerrado");
+        pc::Logger::instance().info ("app.stop", "Playlist Control encerrado");
         pc::Logger::instance().close();
         juce::LookAndFeel::setDefaultLookAndFeel (nullptr);
     }

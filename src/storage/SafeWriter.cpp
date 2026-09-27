@@ -90,7 +90,7 @@ WriteResult SafeWriter::write (const WriteRequest& req)
     if (readOnly_)
     {
         r.status = WriteStatus::readOnly;
-        r.message = L"O PlaylistControl está em modo somente leitura. Nenhum arquivo foi alterado.";
+        r.message = L"O Playlist Control está em modo somente leitura. Nenhum arquivo foi alterado.";
         return r;
     }
 

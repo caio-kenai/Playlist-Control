@@ -58,7 +58,7 @@ MainComponent::MainComponent (Workspace& workspace, AppSettings& settings)
         if (workspace_.readOnly())
         {
             confirm (L"Permitir alterações",
-                     L"O PlaylistControl passará a gravar nos arquivos do Playlist Digital quando você salvar.\n\n"
+                     L"O Playlist Control passará a gravar nos arquivos do Playlist Digital quando você salvar.\n\n"
                      L"Toda gravação é validada e guarda uma cópia de segurança no Histórico.",
                      L"Permitir alterações", [this] {
                          workspace_.setReadOnly (false);
@@ -196,7 +196,7 @@ void MainComponent::chooseInstallation()
                                        return;
                                    }
                                    confirm (L"Usar esta instalação?",
-                                            info.summary() + L"\n\nO PlaylistControl passará a ler e controlar os arquivos desta pasta.",
+                                            info.summary() + L"\n\nO Playlist Control passará a ler e controlar os arquivos desta pasta.",
                                             L"Usar esta instalação", [this, folder] {
                                                 settings_.setPgmFolder (folder);
                                                 settings_.setInstallationConfirmed (true);
@@ -231,12 +231,12 @@ void MainComponent::paintHeader (juce::Graphics& g, juce::Rectangle<int> r)
     g.drawImageWithin (symbol, logo.getX(), 11, 36, 36, juce::RectanglePlacement::centred);
     auto word = logo.withTrimmedLeft (44);
     auto wordFont = juce::Font (juce::FontOptions ("Segoe UI", 21.0f, juce::Font::bold));
-    auto playlistWidth = juce::GlyphArrangement::getStringWidth (wordFont, "playlist");
+    auto playlistWidth = juce::GlyphArrangement::getStringWidth (wordFont, "Playlist ");
     g.setFont (wordFont);
     g.setColour (juce::Colours::white);
-    g.drawText ("playlist", word.getX(), 0, (int) playlistWidth + 2, headerHeight, juce::Justification::centredLeft, false);
+    g.drawText ("Playlist", word.getX(), 0, (int) playlistWidth + 2, headerHeight, juce::Justification::centredLeft, false);
     g.setColour (juce::Colour (0xff29c3ff));
-    g.drawText ("control", word.getX() + (int) playlistWidth, 0, 100, headerHeight, juce::Justification::centredLeft, false);
+    g.drawText ("Control", word.getX() + (int) playlistWidth, 0, 100, headerHeight, juce::Justification::centredLeft, false);
 
     auto pill = modeButton_.getBounds().toFloat().translated (-146.0f, 0.0f).withWidth (136.0f);
     auto info = r.withRight ((int) pill.getX() - 12);

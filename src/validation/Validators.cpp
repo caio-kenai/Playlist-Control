@@ -64,7 +64,7 @@ DiagnosticList validateSchedule (const ScheduleDocument& doc, const juce::File& 
                 out.add (make (Severity::error, "schedule.time.order", file, line,
                                L"Horário " + b.time.toString() + " fora de ordem (vem depois de " + previous->toString() + ").",
                                L"O manual exige horários em ordem crescente, um bloco por linha.",
-                               L"Mova a linha para a posição correta; o PlaylistControl mantém a ordem ao inserir blocos.", l.raw));
+                               L"Mova a linha para a posição correta; o Playlist Control mantém a ordem ao inserir blocos.", l.raw));
         }
         previous = b.time;
 
@@ -174,7 +174,7 @@ DiagnosticList validatePlaylistIni (const PlaylistIni& ini, const juce::File& fi
 
         if (s.format == ScheduleFormat::other)
             out.add (make (Severity::error, "ini.format", file, line, "FORMATO=" + s.formatRaw + " em [" + section + "].",
-                           L"Os formatos documentados são AUTO e TXT1 (outros formatos, como DBF, não são tratados pelo PlaylistControl).",
+                           L"Os formatos documentados são AUTO e TXT1 (outros formatos, como DBF, não são tratados pelo Playlist Control).",
                            "Use AUTO ou TXT1."));
         if (s.format == ScheduleFormat::missing)
             out.add (make (Severity::warning, "ini.format.missing", file, line, "[" + section + "] sem FORMATO.",
