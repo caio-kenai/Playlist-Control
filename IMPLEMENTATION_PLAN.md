@@ -27,7 +27,11 @@ compilação, testes, revisão e commit.
 | 18 | Histórico | lista, diferença, restauração | concluída |
 | 19 | Testes reais | cópia da `pgm` + leitura da instalação real sem gravar | concluída |
 | 20 | README, Release, publicação | build Release, documentação final, push | concluída |
-| 21 | Índices (tese) | verificador NTX, reconstrução em memória, conclusão em `docs/INDICES.md` | concluída (recriação pela interface pendente de decisão) |
+| 21 | Índices (tese) | verificador NTX, reconstrução em memória, conclusão em `docs/INDICES.md` | concluída |
+| 22 | Identidade visual | nova logo, ícone do Windows ocupando o quadro, nome do software como imagem no cabeçalho | concluída |
+| 23 | Interface 2 | botões com ícones, chip de estado do Playlist, menu lateral com ícones e acentos corretos, sem barra de status | concluída |
+| 24 | Afiliadas de rede | tabela nome/endereço/porta no `PLAYLIST.ini`, validação, criação e remoção da seção | concluída |
+| 25 | Recriação de índices | tela Suporte > Índices: conferência, fechar Playlist pela janela, cópia, exclusão, SeparaComprove, reabertura e conferência | concluída |
 
 ## Estratégia de testes
 
@@ -57,13 +61,16 @@ compilação, testes, revisão e commit.
 
 ## Pendências de investigação
 
-1. Semântica de `DUR=300` (segundos?) versus `DUR=3:00`.
-2. `%w`: Domingo = 0 ou 7.
+1. ~~Semântica de `DUR=300`~~: segundos (confirmado pelo suporte).
+2. `%w`: domingo = 7 adotado (exemplo do manual); confirmar num Playlist de teste
+   em um domingo com `ARQUIVO=MAPAS\%w.txt` e os arquivos `0.txt` e `7.txt`.
 3. Comandos `<IALOC>`, `<IANEWS>` nas grades.
 4. Aceitação de horário sem zero à esquerda e de nome de arquivo sem aspas.
 5. Encoding esperado pelo Playlist para mapas/grades com acentos.
 6. Se o Playlist relê `PLAYLIST.ini` sem reiniciar.
 7. Valores de `TIPO` em `LIGACAO.DBF` além de `A` e `C`.
 8. Formato exato do rodízio com letra do Commercial.
-9. Causa do `Merge ... linha 1 inválida` (hipótese: título de pasta).
-10. Comportamento do `SeparaComprove.exe` e recriação de `COMPROVE-*.NTX` (ver `docs/INDICES.md`).
+9. Causa do `Merge ... linha 1 inválida` (hipótese: título de pasta). Fora do
+   foco: os `.merge` vêm do programa de programação eleitoral.
+10. ~~Comportamento do `SeparaComprove.exe`~~: apurado (ver `docs/INDICES.md`).
+    Falta medir o tempo de abertura do Playlist real com base grande.

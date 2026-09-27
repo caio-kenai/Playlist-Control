@@ -153,8 +153,10 @@ Seções conhecidas:
 
 Variáveis em `ARQUIVO`: `%d` dia, `%m` mês, `%Y` ano (4), `%y` ano (2), `%a`
 dia da semana abreviado (`Seg Ter Qua Qui Sex Sáb Dom`), `%w` número do dia
-[M-PD]. O manual se contradiz sobre `%w` (texto diz Dom=0; a tabela lista
-1..7 com Domingo=7) — **PENDENTE**; o código mostra os dois candidatos.
+[M-PD]. O manual se contradiz sobre `%w` (o texto diz Dom=0; o exemplo lista
+`1.txt` = segunda a `7.txt` = domingo). Segunda = 1 nos dois; o domingo segue o
+exemplo e a experiência do suporte: **7**. O `0` continua listado como
+alternativa até a confirmação num Playlist de teste.
 
 Busca no modo `AUTO` [M-PD]:
 
@@ -180,8 +182,8 @@ HH:MM[ (PARÂMETROS)] [ITEM[, ITEM]...][, ]
 - **Parâmetros** entre parênteses, separados por vírgula [M-PD][ARQ]:
   `ID=<nome>`, `FIXO`, `LOCAL`, `SAT`, `DUR=<duração>`, `LOCKED`, `DESCARTE`.
   `DUR` aparece como `DUR=3:00` / `DUR=13:00` (min:seg) [M-PD][ARQ] e como
-  `DUR=300` nos mapas do Planner [ARQ]. O Planner usa blocos de 5 min, o que
-  indica segundos — **PENDENTE**. O texto original é sempre preservado.
+  `DUR=300` nos mapas do Planner [ARQ]: número sem dois-pontos = segundos (os
+  blocos do Planner têm 5 min). O texto original é sempre preservado.
 - **Itens** separados por vírgula (espaço opcional) [M-PD]:
   - código registrado ou código de pasta: `VH`, `55`, `MUS1`, `SERTA90`;
   - código com sufixo de refrão: `MUS1-R` [M-PD];
@@ -263,17 +265,17 @@ Quatro índices Clipper NTX padrão [ARQ]:
 | `COMPROVE-C.NTX` | `CODIGO+DTOS(DATA)+BLOCO` |
 | `COMPROVE-A.NTX` | `UPPER(ARQUIVO)+DESCEND(DTOS(DATA))+DESCEND(HORAFIM)` |
 
-Observado: os `LIGA_*.NTX` foram recriados no startup do Playlist mesmo sem
-alteração no DBF [ARQ][LOG]. Ver §9.
+Observado: os quatro índices são gravados quando o Playlist abre, mesmo sem
+alteração nas tabelas [ARQ][LOG]. Ver §9.
 
 ### 4.7 Montagem e merge
 
 `Montagem\dd-mm-aaaa.TXT`: `HH:MM T, pos, "Pasta", "Arquivo"` com `T` = `M`
-ou `C` [ARQ]. `*.merge` (Horário Eleitoral) usa o mesmo formato. O log registra
-`Merge ... linha 1 inválida` para arquivos que referenciam a pasta `Eleicoes`
-depois que ela foi renomeada para `Eleições` no Config Manager [LOG]. Hipótese:
-o título da pasta precisa existir no `Folders.xml` — **PENDENTE** de teste
-controlado, mas já é um diagnóstico útil.
+ou `C` [ARQ]. `*.merge` usa o mesmo formato: é a programação eleitoral gerada
+por um programa próprio, que o Playlist mescla à programação do dia. O Playlist
+Control só lê esses arquivos e não os edita. O log registra `Merge ... linha 1
+inválida` para arquivos que referenciam a pasta `Eleicoes` depois que ela foi
+renomeada para `Eleições` no Config Manager [LOG]; o Diagnóstico aponta o caso.
 
 ---
 
@@ -348,7 +350,7 @@ e oferece recarregar ou comparar. A gravação nunca sobrescreve silenciosamente
 | `PLAYLIST.ini` | permitido; efeito após reiniciar o Playlist — **PENDENTE** se ele relê |
 | `CONFIG.XML`, `Operadores\*` | bloqueado; o Playlist regrava esses arquivos |
 | `Folders.xml`, `.lnk`, `LIGACAO.DBF` | somente leitura nesta versão |
-| `Indices\*.NTX` | somente leitura |
+| `Indices\*.NTX` | recriação só com o Playlist fechado (a tela Índices fecha e reabre) |
 
 ### 6.5 Modo somente leitura
 
@@ -379,7 +381,9 @@ src/
   catalog/       CodeCatalog (pastas + LIGACAO), resolução de itens
   validation/    ScheduleValidator, PlaylistIniValidator, ConfigValidator,
                  FoldersValidator, CrossValidator
-  services/      Workspace (instalação carregada), DocumentSession, ActivityFeed
+  services/      Workspace (instalação carregada), FileSession, DirectoryWatcher,
+                 IndexMaintenance (conferência e recriação dos índices)
+  platform/      WindowsSystem (processos, janelas, serviços, programas instalados)
   logging/       Logger (JSON Lines)
   ui/            Theme/LookAndFeel, MainWindow, Sidebar, views/*, components/*
   app/           Main (JUCEApplication)
@@ -407,8 +411,15 @@ JUCE puro. Identidade visual baseada no tema "Standard" do próprio Playlist
 | Seleção | `#5CB142` (texto `#CCFFCC`) |
 | Inserção com erro (Playlist) | `#C0C0C0` |
 
-Navegação lateral: Painel, Mapas, Grades, Relógios, Playlist.ini,
-Configurações (CONFIG.XML), Pastas e códigos, Diagnóstico, Histórico. Blocos
+Cabeçalho com o símbolo e o nome do Playlist Control (imagens), título da
+tela, a situação do Playlist ("no ar"/"fechado"), o modo (somente leitura ou
+edição liberada) e botões de ícone para escolher a instalação e recarregar.
+Não há barra de status: avisos de ação aparecem como mensagem flutuante.
+
+Navegação lateral com ícones, em grupos: Painel; Programação (Mapas, Grades,
+Relógios); Configuração (Leitura de mapas — `PLAYLIST.ini`, com afiliadas de
+rede e beep —, Opções do Playlist, Pastas e códigos, Operadores); Suporte
+(Diagnóstico, Índices, Histórico). Blocos
 são desenhados como no Playlist: faixa vertical colorida à esquerda com o tipo
 (Comercial/Musical), cabeçalho com data, horário, duração e parâmetros (F, SAT,
 cadeado, DUR), e as inserções em linhas alternadas.
@@ -417,9 +428,11 @@ cadeado, DUR), e as inserções em linhas alternadas.
 
 ## 9. Recriação de índices
 
-Analisada em [docs/INDICES.md](docs/INDICES.md). Resumo: os índices NTX foram
-decodificados; reconstruídos a partir das tabelas, `LIGA_COD.NTX` e
-`LIGA_ARQ.NTX` ficam idênticos byte a byte aos gravados pelo Playlist e os
-`COMPROVE-*.NTX` têm o mesmo conteúdo em outra disposição de páginas. O
-Diagnóstico já verifica todos os índices; a recriação pela interface depende
-das decisões listadas no documento.
+Detalhada em [docs/INDICES.md](docs/INDICES.md). Os índices NTX foram
+decodificados e são conferidos contra as tabelas. A recriação segue o
+procedimento do suporte — fechar o Playlist, apagar `Indices\*.NTX`, executar o
+`SeparaComprove.exe` e abrir o Playlist, que grava os índices ao iniciar — e
+não é possível com o Playlist aberto (ele mantém os arquivos abertos e usa as
+páginas já lidas). O Playlist é fechado pela própria janela (`WM_CLOSE`),
+nunca encerrado à força; os arquivos são copiados antes e devolvidos se algo
+falhar antes do SeparaComprove.
