@@ -1,6 +1,7 @@
 #include "TestUtils.h"
 #include "core/TextCodec.h"
 #include "core/TimeOfDay.h"
+#include "core/Diagnostic.h"
 
 namespace pc::test
 {
@@ -85,6 +86,12 @@ public:
             expect (! TimeOfDay::parsePrefix ("ab:cd").time.has_value());
             expect (! TimeOfDay::parsePrefix ("").time.has_value());
             expectEquals (TimeOfDay::fromMinutes (1439)->toString(), juce::String ("23:59"));
+        }
+
+        beginTest ("Accented messages are decoded correctly");
+        {
+            expectEquals (toDisplayString (Severity::info), juce::String (juce::CharPointer_UTF8 ("Informa\xc3\xa7\xc3\xa3o")));
+            expectEquals (toDisplayString (TextEncoding::utf8Bom), juce::String ("UTF-8 com BOM"));
         }
 
         beginTest ("Date arithmetic");

@@ -133,7 +133,7 @@ ItemResolution CodeCatalog::resolve (const ScheduleItem& item, const Date& date)
             if (r.registrations.empty())
             {
                 r.status = ItemStatus::unknownCode;
-                r.description = "Código não registrado";
+                r.description = L"Código não registrado";
                 return r;
             }
 
@@ -163,7 +163,7 @@ ItemResolution CodeCatalog::resolve (const ScheduleItem& item, const Date& date)
                 anyFound = anyFound || ! where.isEmpty();
             }
             r.foundIn.removeDuplicates (true);
-            r.description = files.joinIntoString (" / ") + (valid.size() > 1 ? "  (rodízio)" : "");
+            r.description = files.joinIntoString (" / ") + (valid.size() > 1 ? L"  (rodízio)" : L"");
             r.status = ! indexed_ || anyFound ? ItemStatus::ok : ItemStatus::fileMissing;
             return r;
         }

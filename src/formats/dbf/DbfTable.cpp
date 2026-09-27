@@ -20,7 +20,7 @@ std::optional<DbfTable> DbfTable::parse (const juce::MemoryBlock& bytes, juce::S
     auto base = (t.version_ & 0x07);
     if (base != 3)
     {
-        error = "Versão de DBF não suportada (0x" + juce::String::toHexString (t.version_) + ").";
+        error = L"Versão de DBF não suportada (0x" + juce::String::toHexString (t.version_) + ").";
         return std::nullopt;
     }
     t.lastUpdate_ = { 1900 + p[1], juce::jlimit (1, 12, (int) p[2]), juce::jlimit (1, 31, (int) p[3]) };
@@ -30,7 +30,7 @@ std::optional<DbfTable> DbfTable::parse (const juce::MemoryBlock& bytes, juce::S
 
     if (t.headerLength_ < 33 || t.headerLength_ > size || t.recordLength_ < 1)
     {
-        error = "Cabeçalho do DBF inválido.";
+        error = L"Cabeçalho do DBF inválido.";
         return std::nullopt;
     }
 
@@ -48,7 +48,7 @@ std::optional<DbfTable> DbfTable::parse (const juce::MemoryBlock& bytes, juce::S
     }
     if (t.fields_.empty() || offset != t.recordLength_)
     {
-        error = "A soma dos campos não confere com o tamanho do registro.";
+        error = L"A soma dos campos não confere com o tamanho do registro.";
         return std::nullopt;
     }
 

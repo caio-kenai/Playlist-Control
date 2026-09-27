@@ -27,17 +27,17 @@ juce::String toDisplayString (FolderKind kind)
 {
     switch (kind)
     {
-        case FolderKind::music:            return "Músicas";
+        case FolderKind::music:            return L"Músicas";
         case FolderKind::commercial:       return "Comerciais";
         case FolderKind::sweeper:          return "Vinhetas";
         case FolderKind::timeAnnouncement: return "Hora certa";
         case FolderKind::temperature:      return "Temperatura";
         case FolderKind::text:             return "Textos";
         case FolderKind::track:            return "Trilhas";
-        case FolderKind::voiceTrack:       return "Locuções";
+        case FolderKind::voiceTrack:       return L"Locuções";
         case FolderKind::pause:            return "Pausa";
         case FolderKind::command:          return "Comando";
-        case FolderKind::generic:          return "Genérica";
+        case FolderKind::generic:          return L"Genérica";
         case FolderKind::unknown:          return "Desconhecido";
     }
     return {};
@@ -59,7 +59,7 @@ std::optional<FoldersXml> FoldersXml::parse (const juce::MemoryBlock& bytes, juc
     auto root = doc->root();
     if (doc->node (root).name != "Folders")
     {
-        error = "O elemento raiz não é <Folders>.";
+        error = L"O elemento raiz não é <Folders>.";
         return std::nullopt;
     }
 

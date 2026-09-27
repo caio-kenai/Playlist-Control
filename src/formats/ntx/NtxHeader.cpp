@@ -10,7 +10,7 @@ NtxHeader NtxHeader::parse (const juce::MemoryBlock& bytes)
     h.fileSize = (juce::int64) bytes.getSize();
     if (bytes.getSize() < 1024)
     {
-        h.problem = "Arquivo menor que o cabeçalho de 1024 bytes.";
+        h.problem = L"Arquivo menor que o cabeçalho de 1024 bytes.";
         return h;
     }
 
@@ -30,13 +30,13 @@ NtxHeader NtxHeader::parse (const juce::MemoryBlock& bytes)
     if (h.signature != 6 && h.signature != 7)
         h.problem = "Assinatura NTX inesperada (" + juce::String (h.signature) + ").";
     else if (bytes.getSize() % 1024 != 0)
-        h.problem = "Tamanho do arquivo não é múltiplo de 1024 bytes.";
+        h.problem = L"Tamanho do arquivo não é múltiplo de 1024 bytes.";
     else if (h.keySize <= 0 || h.itemSize != h.keySize + 8)
         h.problem = "Tamanho de chave inconsistente.";
     else if (h.rootPage % 1024 != 0 || h.rootPage >= (juce::uint32) bytes.getSize())
-        h.problem = "Página raiz fora do arquivo.";
+        h.problem = L"Página raiz fora do arquivo.";
     else if (h.keyExpression.isEmpty())
-        h.problem = "Expressão de chave vazia.";
+        h.problem = L"Expressão de chave vazia.";
     else
         h.valid = true;
     return h;

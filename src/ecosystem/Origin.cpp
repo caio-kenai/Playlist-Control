@@ -11,7 +11,7 @@ juce::String toDisplayString (FileOrigin origin)
         case FileOrigin::planner:    return "Planner (Sync Service)";
         case FileOrigin::commercial: return "Commercial";
         case FileOrigin::maker:      return "Maker (Playlist Server)";
-        case FileOrigin::electoral:  return "Horário Eleitoral";
+        case FileOrigin::electoral:  return L"Horário Eleitoral";
         case FileOrigin::manual:     return "Manual";
         case FileOrigin::unknown:    return "Desconhecida";
     }
@@ -68,27 +68,27 @@ OriginAssessment assessScheduleOrigin (const juce::File& file, const ScheduleDoc
         {
             a.origin = FileOrigin::planner;
             a.confirmed = true;
-            a.reason = "O Sync Service está configurado para gravar mapas nesta pasta.";
+            a.reason = L"O Sync Service está configurado para gravar mapas nesta pasta.";
             if (eco->sync.managesDate (*date, ctx.today))
             {
                 a.rewrittenAutomatically = true;
                 a.overwriteWarning = "O Sync Service regrava este mapa a cada " + juce::String (eco->sync.intervalMinutes)
-                                   + " minutos (hoje e os próximos " + juce::String (eco->sync.daysAhead)
-                                   + " dias). Uma alteração feita aqui será perdida na próxima sincronização; "
-                                     "altere a programação no Planner.";
+                                   + L" minutos (hoje e os próximos " + juce::String (eco->sync.daysAhead)
+                                   + L" dias). Uma alteração feita aqui será perdida na próxima sincronização; "
+                                     L"altere a programação no Planner.";
             }
             else
             {
-                a.overwriteWarning = "Este dia está fora do período sincronizado agora, mas o Sync Service volta a "
-                                     "regravar o mapa quando a data entrar no período.";
+                a.overwriteWarning = L"Este dia está fora do período sincronizado agora, mas o Sync Service volta a "
+                                     L"regravar o mapa quando a data entrar no período.";
             }
             return a;
         }
         if (codeAndFile > 0 || (blocks > 0 && numericDur == blocks))
         {
             a.origin = FileOrigin::planner;
-            a.reason = "Itens no formato \"CÓDIGO|arquivo\" e DUR em segundos, como os mapas do Planner.";
-            a.overwriteWarning = "Mapas do Planner são regravados pelo Sync Service; confira no Planner.";
+            a.reason = L"Itens no formato \"CÓDIGO|arquivo\" e DUR em segundos, como os mapas do Planner.";
+            a.overwriteWarning = L"Mapas do Planner são regravados pelo Sync Service; confira no Planner.";
             return a;
         }
         if (eco != nullptr && eco->commercial.found && date.has_value()
@@ -96,7 +96,7 @@ OriginAssessment assessScheduleOrigin (const juce::File& file, const ScheduleDoc
         {
             a.origin = FileOrigin::commercial;
             a.reason = "O Commercial exporta mapas com data completa para esta pasta.";
-            a.overwriteWarning = "Uma nova exportação do Commercial para este dia substitui o arquivo.";
+            a.overwriteWarning = L"Uma nova exportação do Commercial para este dia substitui o arquivo.";
             return a;
         }
     }
@@ -106,17 +106,17 @@ OriginAssessment assessScheduleOrigin (const juce::File& file, const ScheduleDoc
         if (date.has_value() && quoted > 0 && codes == 0 && codeAndFile == 0)
         {
             a.origin = FileOrigin::maker;
-            a.reason = "Grade diária com nomes de arquivo entre aspas, como as gravadas pelo Playlist Server.";
+            a.reason = L"Grade diária com nomes de arquivo entre aspas, como as gravadas pelo Playlist Server.";
             a.confirmed = false;
             if (eco != nullptr && eco->playlistServer.found)
-                a.overwriteWarning = "Qualquer alteração da programação deste dia no Maker regrava o arquivo.";
+                a.overwriteWarning = L"Qualquer alteração da programação deste dia no Maker regrava o arquivo.";
             return a;
         }
     }
 
     a.origin = FileOrigin::manual;
-    a.reason = date.has_value() ? "Arquivo diário sem sinais de geração automática."
-                                : "Arquivo fixo (padrão, dia da semana ou relógio), mantido manualmente.";
+    a.reason = date.has_value() ? L"Arquivo diário sem sinais de geração automática."
+                                : L"Arquivo fixo (padrão, dia da semana ou relógio), mantido manualmente.";
     return a;
 }
 

@@ -3,6 +3,7 @@
 #include "core/TextCodec.h"
 
 #include <optional>
+#include <string>
 
 namespace pc
 {
@@ -57,8 +58,11 @@ private:
     bool scan (juce::String& error);
     juce::String indentationOf (int position) const;
     juce::String dominantEol() const;
+    int lineAt (int position) const;
 
     juce::String text_;
+    std::u32string w_;
+    std::vector<int> lineStarts_;
     TextEncoding encoding_ = TextEncoding::utf8;
     std::vector<Node> nodes_;
 };

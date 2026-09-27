@@ -193,8 +193,8 @@ juce::StringArray configGroups()
 {
     juce::StringArray groups;
     for (auto& f : fields)
-        groups.addIfNotAlreadyThere (f.group);
-    groups.add ("Outras configurações");
+        groups.addIfNotAlreadyThere (juce::String::fromUTF8 (f.group));
+    groups.add (L"Outras configurações");
     return groups;
 }
 

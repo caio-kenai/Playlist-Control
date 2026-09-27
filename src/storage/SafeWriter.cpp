@@ -18,7 +18,7 @@ juce::String writeTemp (const juce::File& temp, const juce::MemoryBlock& content
     HANDLE h = CreateFileW (temp.getFullPathName().toWideCharPointer(), GENERIC_WRITE, 0, nullptr, CREATE_NEW,
                             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, nullptr);
     if (h == INVALID_HANDLE_VALUE)
-        return "Não foi possível criar o arquivo temporário: " + describeWin32Error (GetLastError());
+        return L"Não foi possível criar o arquivo temporário: " + describeWin32Error (GetLastError());
 
     juce::String error;
     size_t done = 0;
@@ -27,11 +27,11 @@ juce::String writeTemp (const juce::File& temp, const juce::MemoryBlock& content
         DWORD chunk = (DWORD) juce::jmin<size_t> (content.getSize() - done, 1 << 20);
         DWORD written = 0;
         if (! WriteFile (h, static_cast<const char*> (content.getData()) + done, chunk, &written, nullptr) || written == 0)
-            error = "Falha ao gravar o arquivo temporário: " + describeWin32Error (GetLastError());
+            error = L"Falha ao gravar o arquivo temporário: " + describeWin32Error (GetLastError());
         done += written;
     }
     if (error.isEmpty() && ! FlushFileBuffers (h))
-        error = "Falha ao descarregar o arquivo temporário no disco: " + describeWin32Error (GetLastError());
+        error = L"Falha ao descarregar o arquivo temporário no disco: " + describeWin32Error (GetLastError());
     CloseHandle (h);
     return error;
 }
@@ -71,9 +71,9 @@ juce::String replaceWithRetry (const juce::File& target, const juce::File& temp,
         juce::Thread::sleep (100);
     }
     if (last == ERROR_SHARING_VIOLATION || last == ERROR_LOCK_VIOLATION || last == ERROR_UNABLE_TO_REMOVE_REPLACED)
-        return "O arquivo está em uso por outro programa e não pôde ser substituído agora. "
+        return L"O arquivo está em uso por outro programa e não pôde ser substituído agora. "
                "Tente novamente em alguns segundos. (" + describeWin32Error (last) + ")";
-    return "Não foi possível substituir o arquivo: " + describeWin32Error (last);
+    return L"Não foi possível substituir o arquivo: " + describeWin32Error (last);
 }
 } // namespace
 
@@ -90,7 +90,7 @@ WriteResult SafeWriter::write (const WriteRequest& req)
     if (readOnly_)
     {
         r.status = WriteStatus::readOnly;
-        r.message = "O PlaylistControl está em modo somente leitura. Nenhum arquivo foi alterado.";
+        r.message = L"O PlaylistControl está em modo somente leitura. Nenhum arquivo foi alterado.";
         return r;
     }
 
@@ -103,7 +103,7 @@ WriteResult SafeWriter::write (const WriteRequest& req)
         if (! readFileShared (req.target, current, err))
         {
             r.status = WriteStatus::ioError;
-            r.message = "Não foi possível ler o arquivo atual antes de gravar: " + err;
+            r.message = L"Não foi possível ler o arquivo atual antes de gravar: " + err;
             log.error ("write.read_failed", r.message, f);
             return r;
         }
@@ -116,8 +116,8 @@ WriteResult SafeWriter::write (const WriteRequest& req)
         r.status = WriteStatus::conflict;
         r.message = currentSnap.exists
                         ? "O arquivo foi alterado por outro programa depois que foi aberto aqui. "
-                          "Recarregue o arquivo e refaça a alteração, ou compare as versões antes de decidir."
-                        : "O arquivo foi removido por outro programa depois que foi aberto aqui.";
+                          L"Recarregue o arquivo e refaça a alteração, ou compare as versões antes de decidir."
+                        : L"O arquivo foi removido por outro programa depois que foi aberto aqui.";
         log.warning ("write.conflict", r.message, f);
         return r;
     }
@@ -175,12 +175,12 @@ WriteResult SafeWriter::write (const WriteRequest& req)
 
     juce::MemoryBlock check;
     if (! readFileShared (temp, check, err) || check != req.content)
-        return fail ("O arquivo temporário não confere com o conteúdo esperado. Nada foi alterado.");
+        return fail (L"O arquivo temporário não confere com o conteúdo esperado. Nada foi alterado.");
 
     // 6. Atomic replacement.
     err = replaceWithRetry (req.target, temp, exists, retryMs_);
     if (err.isNotEmpty())
-        return fail (err + " O arquivo original não foi alterado.");
+        return fail (err + L" O arquivo original não foi alterado.");
 
     // 7. Confirm what is on disk now.
     juce::MemoryBlock written;
@@ -189,8 +189,8 @@ WriteResult SafeWriter::write (const WriteRequest& req)
         // Something else wrote in between; the backup stays available.
         history_.commit (r.entry);
         r.status = WriteStatus::ioError;
-        r.message = "O arquivo foi gravado, mas o conteúdo lido em seguida é diferente. "
-                    "Outro programa pode ter alterado o arquivo ao mesmo tempo. A versão anterior está no Histórico.";
+        r.message = L"O arquivo foi gravado, mas o conteúdo lido em seguida é diferente. "
+                    L"Outro programa pode ter alterado o arquivo ao mesmo tempo. A versão anterior está no Histórico.";
         log.error ("write.post_check_failed", r.message, f);
         return r;
     }
@@ -198,7 +198,7 @@ WriteResult SafeWriter::write (const WriteRequest& req)
     history_.commit (r.entry);
     r.after = FileSnapshot::fromBytes (req.target, written);
     r.status = WriteStatus::written;
-    r.message = "Alteração gravada com cópia de segurança.";
+    r.message = L"Alteração gravada com cópia de segurança.";
     f.set ("history", r.entry.id);
     f.set ("beforeSha256", r.entry.beforeSha256);
     f.set ("afterSha256", r.entry.afterSha256);

@@ -27,8 +27,8 @@ juce::String toDisplayString (ScheduleKind kind)
     {
         case ScheduleKind::commercial:      return "Mapa comercial";
         case ScheduleKind::musical:         return "Grade musical";
-        case ScheduleKind::commercialClock: return "Relógio comercial";
-        case ScheduleKind::musicalClock:    return "Relógio musical";
+        case ScheduleKind::commercialClock: return L"Relógio comercial";
+        case ScheduleKind::musicalClock:    return L"Relógio musical";
     }
     return {};
 }

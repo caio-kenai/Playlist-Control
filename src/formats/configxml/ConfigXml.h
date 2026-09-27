@@ -18,8 +18,8 @@ struct ConfigEntry
     {
         return field != nullptr && field->type != ConfigType::readOnly;
     }
-    juce::String group() const { return field != nullptr ? juce::String (field->group) : juce::String ("Outras configurações"); }
-    juce::String label() const { return field != nullptr ? juce::String (field->label) : path; }
+    juce::String group() const { return field != nullptr ? juce::String::fromUTF8 (field->group) : juce::String (L"Outras configurações"); }
+    juce::String label() const { return field != nullptr ? juce::String::fromUTF8 (field->label) : path; }
 };
 
 // CONFIG.XML of the Playlist (Ferramentas > Opções > Configurações e Inserções).

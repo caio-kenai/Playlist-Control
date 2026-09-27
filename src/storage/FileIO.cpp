@@ -36,7 +36,7 @@ bool readFileShared (const juce::File& file, juce::MemoryBlock& out, juce::Strin
     bool ok = GetFileSizeEx (h, &size) != 0;
     if (ok && size.QuadPart > (LONGLONG) 512 * 1024 * 1024)
     {
-        error = "Arquivo grande demais para ser lido como configuração.";
+        error = L"Arquivo grande demais para ser lido como configuração.";
         ok = false;
     }
     if (ok)

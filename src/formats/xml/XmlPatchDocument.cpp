@@ -1,7 +1,50 @@
 #include "formats/xml/XmlPatchDocument.h"
 
+#include <algorithm>
+
 namespace pc
 {
+
+// juce::String stores UTF-8, so indexing it is linear. The scanner works on a
+// UTF-32 copy and positions are code point indexes into that copy.
+
+namespace
+{
+std::u32string toU32 (const juce::String& s)
+{
+    std::u32string out;
+    out.reserve ((size_t) s.getNumBytesAsUTF8());
+    for (auto p = s.getCharPointer(); ! p.isEmpty();)
+        out.push_back ((char32_t) p.getAndAdvance());
+    return out;
+}
+
+juce::String fromU32 (const std::u32string& w, size_t start, size_t end)
+{
+    end = std::min (end, w.size());
+    if (start >= end)
+        return {};
+    std::u32string part (w.begin() + (std::ptrdiff_t) start, w.begin() + (std::ptrdiff_t) end);
+    return juce::String (juce::CharPointer_UTF32 (reinterpret_cast<const juce::CharPointer_UTF32::CharType*> (part.c_str())));
+}
+
+bool isSpace (char32_t c)
+{
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+}
+
+int findFrom (const std::u32string& w, int from, const char32_t* what)
+{
+    auto pos = w.find (what, (size_t) from);
+    return pos == std::u32string::npos ? -1 : (int) pos;
+}
+
+int findChar (const std::u32string& w, int from, char32_t c)
+{
+    auto pos = w.find (c, (size_t) from);
+    return pos == std::u32string::npos ? -1 : (int) pos;
+}
+} // namespace
 
 juce::String XmlPatchDocument::escape (const juce::String& s)
 {
@@ -12,21 +55,22 @@ juce::String XmlPatchDocument::unescape (const juce::String& s)
 {
     if (! s.containsChar ('&'))
         return s;
-    juce::String out;
-    for (int i = 0; i < s.length(); ++i)
+    auto w = toU32 (s);
+    std::u32string out;
+    for (size_t i = 0; i < w.size(); ++i)
     {
-        if (s[i] != '&')
+        if (w[i] != '&')
         {
-            out += s[i];
+            out.push_back (w[i]);
             continue;
         }
-        auto semi = s.indexOfChar (i, ';');
-        if (semi < 0)
+        auto semi = w.find (U';', i);
+        if (semi == std::u32string::npos)
         {
-            out += s[i];
+            out.push_back (w[i]);
             continue;
         }
-        auto ent = s.substring (i + 1, semi);
+        auto ent = fromU32 (w, i + 1, semi);
         juce::juce_wchar c = 0;
         if (ent == "amp") c = '&';
         else if (ent == "lt") c = '<';
@@ -38,13 +82,13 @@ juce::String XmlPatchDocument::unescape (const juce::String& s)
                                                                     : ent.substring (1).getIntValue());
         if (c == 0)
         {
-            out += s[i];
+            out.push_back (w[i]);
             continue;
         }
-        out += c;
+        out.push_back ((char32_t) c);
         i = semi;
     }
-    return out;
+    return fromU32 (out, 0, out.size());
 }
 
 std::optional<XmlPatchDocument> XmlPatchDocument::parse (const juce::MemoryBlock& bytes, juce::String& error)
@@ -66,53 +110,58 @@ std::optional<XmlPatchDocument> XmlPatchDocument::parseText (const juce::String&
 bool XmlPatchDocument::scan (juce::String& error)
 {
     nodes_.clear();
-    const auto& t = text_;
-    const int n = t.length();
+    w_ = toU32 (text_);
+    const auto& t = w_;
+    const int n = (int) t.size();
+
+    lineStarts_.clear();
+    lineStarts_.push_back (0);
+    for (int k = 0; k < n; ++k)
+        if (t[(size_t) k] == '\n')
+            lineStarts_.push_back (k + 1);
+
     std::vector<int> stack;
     int i = 0;
 
     auto fail = [&] (const juce::String& message, int pos) {
-        int line = 1;
-        for (int k = 0; k < pos && k < n; ++k)
-            if (t[k] == '\n')
-                ++line;
-        error = message + " (linha " + juce::String (line) + ")";
+        error = message + " (linha " + juce::String (lineAt (pos)) + ")";
         return false;
     };
+    auto at = [&] (int k) -> char32_t { return k < n ? t[(size_t) k] : 0; };
 
     while (i < n)
     {
-        if (t[i] != '<')
+        if (t[(size_t) i] != '<')
         {
             ++i;
             continue;
         }
-        if (t.substring (i, i + 4) == "<!--")
+        if (t.compare ((size_t) i, 4, U"<!--") == 0)
         {
-            auto e = t.indexOf (i + 4, "-->");
-            if (e < 0) return fail ("Comentário sem fim", i);
+            auto e = findFrom (t, i + 4, U"-->");
+            if (e < 0) return fail (L"Comentário sem fim", i);
             i = e + 3;
             continue;
         }
-        if (t.substring (i, i + 9) == "<![CDATA[")
+        if (t.compare ((size_t) i, 9, U"<![CDATA[") == 0)
         {
-            auto e = t.indexOf (i + 9, "]]>");
+            auto e = findFrom (t, i + 9, U"]]>");
             if (e < 0) return fail ("CDATA sem fim", i);
             i = e + 3;
             continue;
         }
-        if (i + 1 < n && (t[i + 1] == '?' || t[i + 1] == '!'))
+        if (at (i + 1) == '?' || at (i + 1) == '!')
         {
-            auto e = t.indexOfChar (i, '>');
-            if (e < 0) return fail ("Declaração sem fim", i);
+            auto e = findChar (t, i, '>');
+            if (e < 0) return fail (L"Declaração sem fim", i);
             i = e + 1;
             continue;
         }
-        if (i + 1 < n && t[i + 1] == '/')
+        if (at (i + 1) == '/')
         {
-            auto e = t.indexOfChar (i, '>');
+            auto e = findChar (t, i, '>');
             if (e < 0) return fail ("Tag de fechamento sem fim", i);
-            auto name = t.substring (i + 2, e).trim();
+            auto name = fromU32 (t, (size_t) i + 2, (size_t) e).trim();
             if (stack.empty() || nodes_[(size_t) stack.back()].name != name)
                 return fail ("Tag de fechamento inesperada </" + name + ">", i);
             auto& node = nodes_[(size_t) stack.back()];
@@ -125,10 +174,10 @@ bool XmlPatchDocument::scan (juce::String& error)
 
         // Start tag; attribute values may contain '>'.
         int j = i + 1;
-        juce::juce_wchar quote = 0;
+        char32_t quote = 0;
         while (j < n)
         {
-            auto c = t[j];
+            auto c = t[(size_t) j];
             if (quote != 0) { if (c == quote) quote = 0; }
             else if (c == '"' || c == '\'') quote = c;
             else if (c == '>') break;
@@ -139,34 +188,33 @@ bool XmlPatchDocument::scan (juce::String& error)
 
         Node node;
         node.start = i;
-        auto inner = t.substring (i + 1, j);
-        node.selfClosing = inner.endsWithChar ('/');
+        int innerEnd = j;
+        node.selfClosing = t[(size_t) j - 1] == '/';
         if (node.selfClosing)
-            inner = inner.dropLastCharacters (1);
-        int k = 0;
-        while (k < inner.length() && ! juce::CharacterFunctions::isWhitespace (inner[k]))
+            --innerEnd;
+        int k = i + 1;
+        while (k < innerEnd && ! isSpace (t[(size_t) k]))
             ++k;
-        node.name = inner.substring (0, k);
+        node.name = fromU32 (t, (size_t) i + 1, (size_t) k);
         if (node.name.isEmpty())
             return fail ("Elemento sem nome", i);
 
         // Attributes: name="value" pairs.
-        auto rest = inner.substring (k);
-        int p = 0;
-        while (p < rest.length())
+        int p = k;
+        while (p < innerEnd)
         {
-            while (p < rest.length() && juce::CharacterFunctions::isWhitespace (rest[p])) ++p;
-            int eq = rest.indexOfChar (p, '=');
-            if (eq < 0) break;
-            auto attrName = rest.substring (p, eq).trim();
+            while (p < innerEnd && isSpace (t[(size_t) p])) ++p;
+            int eq = findChar (t, p, '=');
+            if (eq < 0 || eq >= innerEnd) break;
+            auto attrName = fromU32 (t, (size_t) p, (size_t) eq).trim();
             int q = eq + 1;
-            while (q < rest.length() && juce::CharacterFunctions::isWhitespace (rest[q])) ++q;
-            if (q >= rest.length()) break;
-            auto qc = rest[q];
+            while (q < innerEnd && isSpace (t[(size_t) q])) ++q;
+            if (q >= innerEnd) break;
+            auto qc = t[(size_t) q];
             if (qc != '"' && qc != '\'') break;
-            auto close = rest.indexOfChar (q + 1, qc);
-            if (close < 0) break;
-            node.attributes.set (attrName, unescape (rest.substring (q + 1, close)));
+            int close = findChar (t, q + 1, qc);
+            if (close < 0 || close >= innerEnd) break;
+            node.attributes.set (attrName, unescape (fromU32 (t, (size_t) q + 1, (size_t) close)));
             p = close + 1;
         }
 
@@ -187,10 +235,16 @@ bool XmlPatchDocument::scan (juce::String& error)
     }
 
     if (! stack.empty())
-        return fail ("Elemento <" + nodes_[(size_t) stack.back()].name + "> não foi fechado", nodes_[(size_t) stack.back()].start);
+        return fail ("Elemento <" + nodes_[(size_t) stack.back()].name + L"> não foi fechado", nodes_[(size_t) stack.back()].start);
     if (nodes_.empty())
         return fail ("Nenhum elemento encontrado", 0);
     return true;
+}
+
+int XmlPatchDocument::lineAt (int position) const
+{
+    auto it = std::upper_bound (lineStarts_.begin(), lineStarts_.end(), position);
+    return (int) (it - lineStarts_.begin());
 }
 
 bool XmlPatchDocument::toBytes (juce::MemoryBlock& out, juce::juce_wchar* firstBad) const
@@ -227,7 +281,7 @@ juce::String XmlPatchDocument::value (int index) const
     auto& nd = nodes_[(size_t) index];
     if (nd.selfClosing)
         return {};
-    auto raw = text_.substring (nd.contentStart, nd.contentEnd);
+    auto raw = fromU32 (w_, (size_t) nd.contentStart, (size_t) nd.contentEnd);
     if (raw.trim().isEmpty())
         return {};
     return unescape (raw);
@@ -235,13 +289,11 @@ juce::String XmlPatchDocument::value (int index) const
 
 juce::String XmlPatchDocument::indentationOf (int position) const
 {
-    int lineStart = position;
-    while (lineStart > 0 && text_[lineStart - 1] != '\n' && text_[lineStart - 1] != '\r')
-        --lineStart;
-    juce::String indent;
-    for (int k = lineStart; k < position && (text_[k] == ' ' || text_[k] == '\t'); ++k)
-        indent += text_[k];
-    return indent;
+    int lineStart = lineStarts_[(size_t) lineAt (position) - 1];
+    int k = lineStart;
+    while (k < position && (w_[(size_t) k] == ' ' || w_[(size_t) k] == '\t'))
+        ++k;
+    return fromU32 (w_, (size_t) lineStart, (size_t) k);
 }
 
 juce::String XmlPatchDocument::dominantEol() const
@@ -257,18 +309,10 @@ bool XmlPatchDocument::setValue (int index, const juce::String& newValue)
     if (value (index) == newValue)
         return true;
 
-    juce::String content;
-    if (newValue.isEmpty())
-    {
-        // Keep the original empty form if it was empty already; otherwise use
-        // the form the Playlist writes: newline + the element's indentation.
-        content = dominantEol() + indentationOf (nd.start);
-    }
-    else
-    {
-        content = escape (newValue);
-    }
-    text_ = text_.substring (0, nd.contentStart) + content + text_.substring (nd.contentEnd);
+    // An empty value is written the way the Playlist writes it: newline plus
+    // the element's indentation.
+    auto content = newValue.isEmpty() ? dominantEol() + indentationOf (nd.start) : escape (newValue);
+    text_ = fromU32 (w_, 0, (size_t) nd.contentStart) + content + fromU32 (w_, (size_t) nd.contentEnd, w_.size());
     juce::String error;
     auto ok = scan (error);
     jassert (ok);
@@ -277,12 +321,7 @@ bool XmlPatchDocument::setValue (int index, const juce::String& newValue)
 
 int XmlPatchDocument::lineOf (int index) const
 {
-    int line = 1;
-    auto pos = nodes_[(size_t) index].start;
-    for (int k = 0; k < pos; ++k)
-        if (text_[k] == '\n')
-            ++line;
-    return line;
+    return lineAt (nodes_[(size_t) index].start);
 }
 
 } // namespace pc

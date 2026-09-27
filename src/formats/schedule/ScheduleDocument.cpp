@@ -9,9 +9,9 @@ juce::String toDisplayString (ItemKind kind)
 {
     switch (kind)
     {
-        case ItemKind::code:        return "Código";
+        case ItemKind::code:        return L"Código";
         case ItemKind::quotedFile:  return "Arquivo";
-        case ItemKind::codeAndFile: return "Código e arquivo";
+        case ItemKind::codeAndFile: return L"Código e arquivo";
         case ItemKind::command:     return "Comando";
         case ItemKind::bareText:    return "Texto sem aspas";
         case ItemKind::empty:       return "Vazio";

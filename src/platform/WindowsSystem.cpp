@@ -103,10 +103,10 @@ juce::String toDisplayString (ServiceState state)
 {
     switch (state)
     {
-        case ServiceState::notInstalled: return "Não instalado";
+        case ServiceState::notInstalled: return L"Não instalado";
         case ServiceState::stopped:      return "Parado";
         case ServiceState::starting:     return "Iniciando";
-        case ServiceState::running:      return "Em execução";
+        case ServiceState::running:      return L"Em execução";
         case ServiceState::stopping:     return "Parando";
         case ServiceState::paused:       return "Pausado";
         case ServiceState::unknown:      return "Desconhecido";

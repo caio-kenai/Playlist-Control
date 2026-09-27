@@ -10,7 +10,7 @@ std::optional<ConfigXml> ConfigXml::parse (const juce::MemoryBlock& bytes, juce:
         return std::nullopt;
     if (doc->node (doc->root()).name != "Config")
     {
-        error = "O elemento raiz não é <Config>.";
+        error = L"O elemento raiz não é <Config>.";
         return std::nullopt;
     }
     return ConfigXml (std::move (*doc));

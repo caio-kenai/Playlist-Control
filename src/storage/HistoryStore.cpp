@@ -75,18 +75,18 @@ juce::String HistoryStore::begin (HistoryEntry& e, const juce::MemoryBlock* befo
     e.folder = root_.getChildFile (e.time.formatted ("%Y-%m")).getChildFile (e.id);
 
     if (! e.folder.createDirectory())
-        return "Não foi possível criar a pasta de histórico " + e.folder.getFullPathName() + ".";
+        return L"Não foi possível criar a pasta de histórico " + e.folder.getFullPathName() + ".";
     if (before != nullptr && ! e.beforeFile().replaceWithData (before->getData(), before->getSize()))
-        return "Não foi possível salvar a cópia de segurança em " + e.beforeFile().getFullPathName() + ".";
+        return L"Não foi possível salvar a cópia de segurança em " + e.beforeFile().getFullPathName() + ".";
     if (! e.afterFile().replaceWithData (after.getData(), after.getSize()))
-        return "Não foi possível salvar o novo conteúdo no histórico.";
+        return L"Não foi possível salvar o novo conteúdo no histórico.";
 
     // The backup must be readable before the original is touched.
     if (before != nullptr)
     {
         juce::MemoryBlock check;
         if (! e.beforeFile().loadFileAsData (check) || check != *before)
-            return "A cópia de segurança não pôde ser verificada.";
+            return L"A cópia de segurança não pôde ser verificada.";
     }
     writeManifest (e, "pending");
     return {};

@@ -7,7 +7,7 @@ juce::String toDisplayString (Severity severity)
 {
     switch (severity)
     {
-        case Severity::info:    return "Informação";
+        case Severity::info:    return L"Informação";
         case Severity::warning: return "Aviso";
         case Severity::error:   return "Erro";
     }
@@ -54,7 +54,7 @@ juce::String DiagnosticList::toText (int maxItems) const
         }
         out << toDisplayString (d.severity) << " [" << d.locationText() << "] " << d.message << "\n";
         if (d.excerpt.isNotEmpty()) out << "    Trecho: " << d.excerpt << "\n";
-        if (d.reason.isNotEmpty())  out << "    Por quê: " << d.reason << "\n";
+        if (d.reason.isNotEmpty())  out << L"    Por quê: " << d.reason << "\n";
         if (d.fix.isNotEmpty())     out << "    Como resolver: " << d.fix << "\n";
     }
     return out;

@@ -1,5 +1,7 @@
 #include "core/TextCodec.h"
 
+#include <string>
+
 namespace pc
 {
 
@@ -75,14 +77,14 @@ bool isRepresentableIn1252 (juce::juce_wchar c) noexcept
 juce::String decodeWindows1252 (const void* data, size_t size)
 {
     auto* p = static_cast<const juce::uint8*> (data);
-    juce::String s;
-    s.preallocateBytes (size + 16);
+    std::u32string w;
+    w.reserve (size);
     for (size_t i = 0; i < size; ++i)
     {
         auto b = p[i];
-        s += (juce::juce_wchar) (b >= 0x80 && b < 0xA0 ? cp1252High[b - 0x80] : (juce::juce_wchar) b);
+        w.push_back ((char32_t) (b >= 0x80 && b < 0xA0 ? cp1252High[b - 0x80] : (juce::juce_wchar) b));
     }
-    return s;
+    return juce::String (juce::CharPointer_UTF32 (reinterpret_cast<const juce::CharPointer_UTF32::CharType*> (w.c_str())));
 }
 
 DecodedText decodeText (const void* data, size_t size)

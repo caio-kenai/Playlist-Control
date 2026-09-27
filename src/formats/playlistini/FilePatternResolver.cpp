@@ -107,19 +107,19 @@ std::vector<ScheduleCandidate> scheduleCandidates (const ScheduleSource& source,
     {
         case ScheduleKind::commercial:
             add (list, pgm, "Mapas\\Mapa" + full + ".txt", "AUTO: data completa", assumed);
-            add (list, pgm, "Mapas\\Mapa" + dd + ".txt", "AUTO: dia do mês", assumed);
+            add (list, pgm, "Mapas\\Mapa" + dd + ".txt", L"AUTO: dia do mês", assumed);
             add (list, pgm, "Mapas\\" + abbrev + ".txt", "AUTO: dia da semana", assumed);
-            add (list, pgm, "Mapas\\" + juce::String (dow) + ".txt", "AUTO: número do dia da semana", assumed || dow == 0);
+            add (list, pgm, "Mapas\\" + juce::String (dow) + ".txt", L"AUTO: número do dia da semana", assumed || dow == 0);
             if (dow == 0)
-                add (list, pgm, "Mapas\\7.txt", "AUTO: número do dia da semana (domingo = 7)", true);
-            add (list, pgm, "Mapas\\Mapa.txt", "AUTO: mapa padrão", assumed);
+                add (list, pgm, "Mapas\\7.txt", L"AUTO: número do dia da semana (domingo = 7)", true);
+            add (list, pgm, "Mapas\\Mapa.txt", L"AUTO: mapa padrão", assumed);
             break;
         case ScheduleKind::musical:
             add (list, pgm, "Grades\\" + full + ".txt", "AUTO: data completa", assumed);
-            add (list, pgm, "Grades\\Grade" + dd + ".txt", "AUTO: dia do mês", assumed);
+            add (list, pgm, "Grades\\Grade" + dd + ".txt", L"AUTO: dia do mês", assumed);
             add (list, pgm, "Grades\\" + abbrev + ".txt", "AUTO: dia da semana", assumed);
-            add (list, pgm, "Grades\\Grade.txt", "AUTO: grade padrão", assumed);
-            add (list, pgm, "Mapas\\Grade.txt", "AUTO: grade padrão na pasta Mapas", assumed);
+            add (list, pgm, "Grades\\Grade.txt", L"AUTO: grade padrão", assumed);
+            add (list, pgm, "Mapas\\Grade.txt", L"AUTO: grade padrão na pasta Mapas", assumed);
             break;
         case ScheduleKind::commercialClock:
         case ScheduleKind::musicalClock:
