@@ -249,7 +249,7 @@ Config Manager atualiza os três lugares numa mesma operação [LOG].
 dBase III sem memo. Campos [ARQ]: `CODIGO C12, CTA C10, SEQMEDIA C1,
 PROXIMO N2, ARQUIVO C250, SHORTNAME C12, DURACAO N8.2, TIPO C1, DATAREG D8,
 HORAREG C5, DATAINI D8, HORAINI C5, DATAFIM D8, HORAFIM C5, TEXTO C150,
-FLAGS C1`. `TIPO`: `A` atalho, `C` comercial (outros valores para música e
+FLAGS C10`. `TIPO`: `A` atalho, `C` comercial (outros valores para música e
 vinheta **PENDENTE**). `DATAINI..DATAFIM` = validade do registro [M-PD].
 
 ### 4.6 Índices NTX
