@@ -11,7 +11,7 @@ endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 project(PlaylistControl
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "Central de configuração e operação do Playlist Digital"
     HOMEPAGE_URL "https://github.com/caio-kenai/PlaylistControl"
     LANGUAGES C CXX RC)
