@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Folders>
+  <Folders>8</Folders>
+  <Version>1.2</Version>
+  <Shared>
+    <Folders>1</Folders>
+    <Server>ESTUDIO</Server>
+    <Folder0>
+      <Name>Playlist</Name>
+      <Path>%PLAYLIST_ROOT%</Path>
+    </Folder0>
+  </Shared>
+  <Folder0>
+    <ID>4</ID>
+    <Title>Musicas</Title>
+    <Type>M</Type>
+    <Target>%PLAYLIST_ROOT%\Musicas</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>M</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Musicas.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>MUSIC</DBFId>
+  </Folder0>
+  <Folder1>
+    <ID>1</ID>
+    <Title>Comerciais</Title>
+    <Type>$</Type>
+    <Target>%PLAYLIST_ROOT%\Comerciais</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>$</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Comerciais.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>COM</DBFId>
+  </Folder1>
+  <Folder2>
+    <ID>6</ID>
+    <Title>Vinhetas</Title>
+    <Type>V</Type>
+    <Target>%PLAYLIST_ROOT%\Vinhetas</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>V</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Vinhetas.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>VH</DBFId>
+  </Folder2>
+  <Folder3>
+    <ID>5</ID>
+    <Title>Hora Certa</Title>
+    <Type>H</Type>
+    <Target>%PLAYLIST_ROOT%\Hora Certa</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>H</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Hora Certa.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>HC</DBFId>
+  </Folder3>
+  <Folder4>
+    <ID>7</ID>
+    <Title>Pausa</Title>
+    <Type>P</Type>
+    <Target>%PLAYLIST_ROOT%\pgm</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>P</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Pausa.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>PAUSA</DBFId>
+  </Folder4>
+  <Folder5>
+    <ID>11</ID>
+    <Title>Streaming</Title>
+    <Type>C</Type>
+    <Target>%PLAYLIST_ROOT%\pgm</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>C URL https://stream.exemplo.local/radio</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Streaming.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>STREAM</DBFId>
+  </Folder5>
+  <Folder6>
+    <ID>24</ID>
+    <Title>Eleições</Title>
+    <Type>$</Type>
+    <Target>%PLAYLIST_ROOT%\Eleições</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>$</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Eleições.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>ELEI</DBFId>
+  </Folder6>
+  <Folder7>
+    <ID>25</ID>
+    <Title>Acervo Antigo</Title>
+    <Type>M</Type>
+    <Target>%PLAYLIST_ROOT%\Acervo Antigo</Target>
+    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <ShortcutArguments>M</ShortcutArguments>
+    <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Acervo Antigo.lnk</ShortcutPathName>
+    <IconIndex>0</IconIndex>
+    <Output>-1</Output>
+    <TotalFiles>0</TotalFiles>
+    <DBFId>ANTIGO</DBFId>
+  </Folder7>
+</Folders>

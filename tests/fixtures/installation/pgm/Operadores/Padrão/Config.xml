@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Operador>
+	<TipoOperador>1</TipoOperador>
+	<Id>Padrão</Id>
+	<OperadorRemovido>0</OperadorRemovido>
+	<Acesso>
+		<Nome>Padrão</Nome>
+		<Senha>
+		</Senha>
+		<Admin>0</Admin>
+	</Acesso>
+	<Geral>
+		<InsAdd>1</InsAdd>
+		<InsDel>1</InsDel>
+		<bLockPanes>0</bLockPanes>
+	</Geral>
+	<Pastas>
+		<Musicas>1</Musicas>
+		<Comerciais>0</Comerciais>
+	</Pastas>
+</Operador>

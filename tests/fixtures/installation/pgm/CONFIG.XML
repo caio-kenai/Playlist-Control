@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config>
+	<LastAuthStation_ESTUDIO>1790106572</LastAuthStation_ESTUDIO>
+	<waitBeforeRestart>30</waitBeforeRestart>
+	<Saidas_ESTUDIO>
+		<GUID_Programacao>{00000000-0000-0000-0000-000000000001}</GUID_Programacao>
+		<Programacao>Alto-falantes (Placa Principal)</Programacao>
+		<Escuta>Fones (Placa Principal)</Escuta>
+		<AudioSource>Entrada de linha (Placa Principal)</AudioSource>
+		<UrlSource>https://stream.exemplo.local/radio</UrlSource>
+		<PluginDSP>
+		</PluginDSP>
+	</Saidas_ESTUDIO>
+	<webSocketPort>9002</webSocketPort>
+	<sPlaylistServer>localhost</sPlaylistServer>
+	<nPlaylistServerPort>3033</nPlaylistServerPort>
+	<sPlaylistServerPassword>
+	</sPlaylistServerPassword>
+	<sNomeDaEmissora>Radio Exemplo</sNomeDaEmissora>
+	<sServidor>ESTUDIO</sServidor>
+	<nPortaDados>3030</nPortaDados>
+	<m_bStationOfficeSelecionado>1</m_bStationOfficeSelecionado>
+	<m_sCSO>000000</m_sCSO>
+	<Afiliada>1</Afiliada>
+	<AfiliadaID>EXEMPLO</AfiliadaID>
+	<bPosicionarAutomaticamente>0</bPosicionarAutomaticamente>
+	<nMinutosPosicionar>9</nMinutosPosicionar>
+	<sFtpServer>
+	</sFtpServer>
+	<sVLCAddress>localhost:8080</sVLCAddress>
+	<sVLCPwd>senha-de-teste</sVLCPwd>
+	<bCameraController_EnableVideoMix>-2013265919</bCameraController_EnableVideoMix>
+	<nPercComprovacao>50</nPercComprovacao>
+	<MixMusicas>1750</MixMusicas>
+	<bTocarAoIniciar>0</bTocarAoIniciar>
+	<sRDSDefaultText>Radio &amp; Cia</sRDSDefaultText>
+	<novaChaveDesconhecida>abc</novaChaveDesconhecida>
+</Config>

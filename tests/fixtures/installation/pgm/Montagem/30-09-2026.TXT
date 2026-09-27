@@ -1,0 +1,3 @@
+10:00 C, 0, "Comerciais", "Padaria Pao Quente.mp3"
+10:02 M, 0, "Musicas", "Trio Sol - Estrada.mp3"
+10:02 M, -1, "Musicas", "Banda Azul - Coração.mp3"

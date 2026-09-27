@@ -28,6 +28,16 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/formats/playlistini/FilePatternResolver.cpp
     src/formats/schedule/ScheduleDocument.h
     src/formats/schedule/ScheduleDocument.cpp
+    src/formats/xml/XmlPatchDocument.h
+    src/formats/xml/XmlPatchDocument.cpp
+    src/formats/configxml/ConfigSchema.h
+    src/formats/configxml/ConfigSchema.cpp
+    src/formats/configxml/ConfigXml.h
+    src/formats/configxml/ConfigXml.cpp
+    src/formats/folders/FoldersXml.h
+    src/formats/folders/FoldersXml.cpp
+    src/formats/operators/OperatorProfile.h
+    src/formats/operators/OperatorProfile.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -41,4 +51,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/StorageTests.cpp
     tests/IniTests.cpp
     tests/ScheduleTests.cpp
+    tests/XmlFormatTests.cpp
 )
