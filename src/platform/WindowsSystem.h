@@ -2,6 +2,8 @@
 
 #include <juce_core/juce_core.h>
 
+#include <optional>
+
 namespace pc
 {
 
@@ -57,10 +59,18 @@ struct ProcessWindow
     juce::String title;
     juce::String className;
     bool enabled = true;
-    bool isDialog() const { return className == "#32770"; }
+    int controlId = 0;
+    bool isDialog() const { return className == "#32770" || className == "TMessageForm"; }
 };
 
 std::vector<ProcessWindow> windowsOfProcess (juce::uint32 pid);
+
+// Every descendant window of a window (buttons, texts of a dialog).
+std::vector<ProcessWindow> childWindows (juce::pointer_sized_int parent);
+
+// Posts a message to one window (never to the whole desktop).
+bool postToWindow (juce::pointer_sized_int window, unsigned int message, juce::pointer_sized_int wParam = 0,
+                   juce::pointer_sized_int lParam = 0);
 
 bool isProcessRunning (juce::uint32 pid);
 
@@ -78,6 +88,19 @@ juce::uint32 launchProcess (const juce::File& exe, const juce::File& workingFold
 // Clicks a button of a dialog by posting BM_CLICK to that control.
 bool clickDialogButton (juce::pointer_sized_int dialog, int controlId);
 juce::String dialogItemText (juce::pointer_sized_int dialog, int controlId);
+
+// Windows shortcut (.lnk), as the Config Manager writes in pgm\Atalhos.
+struct ShortcutInfo
+{
+    juce::String target;
+    juce::String arguments;
+    juce::String description;
+    juce::String iconLocation;
+    int iconIndex = 0;
+};
+
+bool writeShortcut (const juce::File& lnk, const ShortcutInfo& info, juce::String& error);
+std::optional<ShortcutInfo> readShortcut (const juce::File& lnk);
 
 // "5.0.9.9" from the executable's version resource.
 juce::String fileVersion (const juce::File& file);

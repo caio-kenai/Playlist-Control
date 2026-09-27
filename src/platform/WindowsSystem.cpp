@@ -2,7 +2,13 @@
 #include "platform/WinInclude.h"
 #include "storage/FileIO.h"
 
+#include <objbase.h>
+#include <shlguid.h>
+#include <shobjidl.h>
 #include <tlhelp32.h>
+
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "uuid.lib")
 
 namespace pc
 {
@@ -104,9 +110,14 @@ namespace
 {
 juce::String windowText (HWND h)
 {
+    // WM_GETTEXT (with a timeout) also reads controls of other processes,
+    // which GetWindowText does not.
     wchar_t buffer[512] {};
-    auto n = GetWindowTextW (h, buffer, (int) std::size (buffer));
-    return juce::String (buffer, (size_t) juce::jmax (0, n));
+    DWORD_PTR copied = 0;
+    if (! SendMessageTimeoutW (h, WM_GETTEXT, (WPARAM) std::size (buffer), reinterpret_cast<LPARAM> (buffer),
+                               SMTO_ABORTIFHUNG | SMTO_BLOCK, 500, &copied))
+        return {};
+    return juce::String (buffer, (size_t) juce::jmin ((DWORD_PTR) std::size (buffer) - 1, copied));
 }
 
 juce::String windowClass (HWND h)
@@ -122,7 +133,15 @@ BOOL CALLBACK collectWindow (HWND h, LPARAM param)
     DWORD pid = 0;
     GetWindowThreadProcessId (h, &pid);
     if (pid == request->first && IsWindowVisible (h))
-        request->second->push_back ({ (juce::pointer_sized_int) h, windowText (h), windowClass (h), IsWindowEnabled (h) != FALSE });
+        request->second->push_back ({ (juce::pointer_sized_int) h, windowText (h), windowClass (h), IsWindowEnabled (h) != FALSE,
+                                      GetDlgCtrlID (h) });
+    return TRUE;
+}
+
+BOOL CALLBACK collectChild (HWND h, LPARAM param)
+{
+    auto* out = reinterpret_cast<std::vector<ProcessWindow>*> (param);
+    out->push_back ({ (juce::pointer_sized_int) h, windowText (h), windowClass (h), IsWindowEnabled (h) != FALSE, GetDlgCtrlID (h) });
     return TRUE;
 }
 } // namespace
@@ -133,6 +152,18 @@ std::vector<ProcessWindow> windowsOfProcess (juce::uint32 pid)
     std::pair<DWORD, std::vector<ProcessWindow>*> request { (DWORD) pid, &out };
     EnumWindows (collectWindow, reinterpret_cast<LPARAM> (&request));
     return out;
+}
+
+std::vector<ProcessWindow> childWindows (juce::pointer_sized_int parent)
+{
+    std::vector<ProcessWindow> out;
+    EnumChildWindows ((HWND) parent, collectChild, reinterpret_cast<LPARAM> (&out));
+    return out;
+}
+
+bool postToWindow (juce::pointer_sized_int window, unsigned int message, juce::pointer_sized_int wParam, juce::pointer_sized_int lParam)
+{
+    return PostMessageW ((HWND) window, message, (WPARAM) wParam, (LPARAM) lParam) != FALSE;
 }
 
 bool isProcessRunning (juce::uint32 pid)
@@ -263,6 +294,91 @@ juce::String fileVersion (const juce::File& file)
         return {};
     return juce::String (HIWORD (info->dwFileVersionMS)) + "." + juce::String (LOWORD (info->dwFileVersionMS)) + "."
          + juce::String (HIWORD (info->dwFileVersionLS)) + "." + juce::String (LOWORD (info->dwFileVersionLS));
+}
+
+namespace
+{
+// COM for the calling thread, released only when this call initialised it.
+struct ComScope
+{
+    ComScope() : hr (CoInitializeEx (nullptr, COINIT_APARTMENTTHREADED)) {}
+    ~ComScope()
+    {
+        if (SUCCEEDED (hr))
+            CoUninitialize();
+    }
+    HRESULT hr;
+};
+
+template <typename T>
+struct ComPtr
+{
+    T* p = nullptr;
+    ~ComPtr()
+    {
+        if (p != nullptr)
+            p->Release();
+    }
+    T* operator->() const { return p; }
+};
+} // namespace
+
+bool writeShortcut (const juce::File& lnk, const ShortcutInfo& info, juce::String& error)
+{
+    ComScope com;
+    ComPtr<IShellLinkW> link;
+    auto hr = CoCreateInstance (CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, reinterpret_cast<void**> (&link.p));
+    if (FAILED (hr))
+    {
+        error = describeWin32Error ((unsigned long) hr);
+        return false;
+    }
+    link->SetPath (info.target.toWideCharPointer());
+    link->SetArguments (info.arguments.toWideCharPointer());
+    link->SetDescription (info.description.toWideCharPointer());
+    link->SetIconLocation (info.iconLocation.toWideCharPointer(), info.iconIndex);
+    link->SetShowCmd (SW_SHOWNORMAL);
+    ComPtr<IPersistFile> file;
+    hr = link->QueryInterface (IID_IPersistFile, reinterpret_cast<void**> (&file.p));
+    if (SUCCEEDED (hr))
+        hr = file->Save (lnk.getFullPathName().toWideCharPointer(), TRUE);
+    if (FAILED (hr))
+    {
+        error = describeWin32Error ((unsigned long) hr);
+        return false;
+    }
+    return true;
+}
+
+std::optional<ShortcutInfo> readShortcut (const juce::File& lnk)
+{
+    ComScope com;
+    ComPtr<IShellLinkW> link;
+    if (FAILED (CoCreateInstance (CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, reinterpret_cast<void**> (&link.p))))
+        return std::nullopt;
+    ComPtr<IPersistFile> file;
+    if (FAILED (link->QueryInterface (IID_IPersistFile, reinterpret_cast<void**> (&file.p)))
+        || FAILED (file->Load (lnk.getFullPathName().toWideCharPointer(), STGM_READ)))
+        return std::nullopt;
+    ShortcutInfo info;
+    wchar_t buffer[2048] {};
+    // SLGP_RAWPATH keeps the path as stored (no environment expansion).
+    if (SUCCEEDED (link->GetPath (buffer, (int) std::size (buffer), nullptr, SLGP_RAWPATH)))
+        info.target = juce::String (buffer);
+    buffer[0] = 0;
+    if (SUCCEEDED (link->GetArguments (buffer, (int) std::size (buffer))))
+        info.arguments = juce::String (buffer);
+    buffer[0] = 0;
+    if (SUCCEEDED (link->GetDescription (buffer, (int) std::size (buffer))))
+        info.description = juce::String (buffer);
+    buffer[0] = 0;
+    int index = 0;
+    if (SUCCEEDED (link->GetIconLocation (buffer, (int) std::size (buffer), &index)))
+    {
+        info.iconLocation = juce::String (buffer);
+        info.iconIndex = index;
+    }
+    return info;
 }
 
 } // namespace pc

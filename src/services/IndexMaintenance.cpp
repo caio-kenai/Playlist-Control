@@ -29,11 +29,6 @@ juce::String tableFor (const juce::String& indexName)
         return "COMPROVE.DBF";
     return {};
 }
-
-bool inside (const juce::File& file, const juce::File& folder)
-{
-    return file.isAChildOf (folder);
-}
 } // namespace
 
 std::vector<IndexStatus> inspectIndexes (const juce::File& pgm)
@@ -91,42 +86,11 @@ IndexRebuildCheck checkIndexRebuild (const juce::File& pgm)
     if (! c.separaComprove.existsAsFile())
         c.blockers.add (L"SeparaComprove.exe não foi encontrado na pasta pgm.");
 
-    juce::StringArray others;
-    for (auto& p : runningProcesses())
-    {
-        juce::File path (p.fullPath);
-        auto lower = p.exeName.toLowerCase();
-        if (isPlaylistExecutableName (p.exeName) && p.fullPath.isEmpty())
-        {
-            // Without the path it is not possible to know which installation
-            // it belongs to, so it is never closed from here.
-            c.blockers.add (L"Há um " + p.exeName + L" aberto (PID " + juce::String (p.pid)
-                            + L") cuja pasta não pôde ser consultada (ele pode estar rodando como administrador). "
-                              L"Abra o Playlist Control como administrador ou feche o Playlist manualmente.");
-        }
-        else if (isPlaylistExecutableName (p.exeName) && inside (path, pgm))
-            c.playlist.push_back ({ p.pid, p.exeName, path });
-        else if (lower == "separacomprove.exe")
-            c.blockers.add (L"O SeparaComprove já está aberto. Feche-o antes.");
-        else if (lower == "ligacao.exe" || lower == "configmanager.exe" || (p.fullPath.isNotEmpty() && inside (path, pgm)))
-            others.addIfNotAlreadyThere (p.exeName);
-        else if (lower == "commercial.exe")
-            c.warnings.add (L"O Commercial está aberto. Ele não usa os índices, mas é mais seguro fechá-lo durante a operação.");
-    }
-    for (auto& name : others)
-        c.blockers.add (L"Feche o " + name + L" antes: ele usa os arquivos da pasta Dados.");
-
-    if (! c.playlist.empty())
-        c.playlistExe = c.playlist.front().exe;
-    else if (pgm.getChildFile ("Playlist.exe").existsAsFile())
-        c.playlistExe = pgm.getChildFile ("Playlist.exe");
-    else
-        for (auto& f : pgm.findChildFiles (juce::File::findFiles, false, "*.exe"))
-            if (isPlaylistExecutableName (f.getFileName()))
-                c.playlistExe = f;
-
-    c.warnings.add (L"Estações da rede que abrem o Playlist a partir desta pasta pgm não são detectadas daqui: "
-                    L"feche-as antes de continuar.");
+    auto programs = checkPlaylistPrograms (pgm);
+    c.playlist = programs.playlist;
+    c.blockers.addArray (programs.blockers);
+    c.warnings.addArray (programs.warnings);
+    c.playlistExe = programs.playlistExe;
     return c;
 }
 
@@ -206,48 +170,6 @@ void IndexRebuild::finish (bool ok, const juce::String& text)
     });
 }
 
-bool IndexRebuild::closePlaylist (const std::vector<PlaylistProgram>& programs)
-{
-    for (auto& p : programs)
-    {
-        if (requestClose (p.pid) == 0 && isProcessRunning (p.pid))
-        {
-            set (stepClose, StepState::failed,
-                 L"Não foi possível pedir ao " + p.name + L" que feche (a janela não aceitou a mensagem). "
-                     L"Se o Playlist roda como administrador, abra o Playlist Control como administrador.");
-            return false;
-        }
-    }
-    auto deadline = juce::Time::getMillisecondCounter() + (juce::uint32) options_.closeTimeoutMs;
-    bool askedToConfirm = false;
-    for (;;)
-    {
-        bool anyRunning = false;
-        for (auto& p : programs)
-        {
-            if (! isProcessRunning (p.pid))
-                continue;
-            anyRunning = true;
-            if (! askedToConfirm)
-                for (auto& w : windowsOfProcess (p.pid))
-                    if (w.isDialog() || ! w.enabled)
-                        askedToConfirm = true;
-        }
-        if (! anyRunning)
-            return true;
-        if (askedToConfirm)
-            set (stepClose, StepState::running, L"O Playlist está perguntando algo: responda na janela dele para fechar.");
-        if (threadShouldExit() || juce::Time::getMillisecondCounter() > deadline)
-        {
-            set (stepClose, StepState::failed,
-                 L"O Playlist não fechou em " + juce::String (options_.closeTimeoutMs / 1000)
-                     + L" s. Nada foi alterado; ele continua aberto.");
-            return false;
-        }
-        juce::Thread::sleep (250);
-    }
-}
-
 bool IndexRebuild::restoreIndexes (juce::String& error)
 {
     bool ok = true;
@@ -312,34 +234,6 @@ bool IndexRebuild::runSeparaComprove (const juce::File& exe)
     return true;
 }
 
-bool IndexRebuild::startPlaylist (const juce::File& exe)
-{
-    juce::String error;
-    auto pid = launchProcess (exe, pgm_, error);
-    if (pid == 0)
-    {
-        set (stepStart, StepState::failed, L"Não foi possível abrir " + exe.getFileName() + ": " + error
-                                               + L". Abra o Playlist Digital manualmente.");
-        return false;
-    }
-    for (int i = 0; i < 240; ++i)
-    {
-        if (! isProcessRunning (pid))
-        {
-            set (stepStart, StepState::failed, exe.getFileName() + L" fechou logo após abrir. Abra o Playlist Digital manualmente.");
-            return false;
-        }
-        if (! windowsOfProcess (pid).empty())
-        {
-            set (stepStart, StepState::done, exe.getFileName() + L" aberto (PID " + juce::String (pid) + ").");
-            return true;
-        }
-        juce::Thread::sleep (250);
-    }
-    set (stepStart, StepState::done, exe.getFileName() + L" iniciado (PID " + juce::String (pid) + L"), ainda sem janela visível.");
-    return true;
-}
-
 bool IndexRebuild::waitForIndexes()
 {
     auto folder = pgm_.getChildFile ("Indices");
@@ -389,8 +283,12 @@ void IndexRebuild::run()
     if (wasRunning)
     {
         set (stepClose, StepState::running, L"Pedindo ao Playlist que feche…");
-        if (! closePlaylist (check.playlist))
+        juce::String error;
+        if (! pc::closePlaylist (check.playlist, options_.closeTimeoutMs,
+                                 [this] (const juce::String& text) { set (stepClose, StepState::running, text); },
+                                 [this] { return threadShouldExit(); }, error))
         {
+            set (stepClose, StepState::failed, error);
             finish (false, L"Nada foi alterado.");
             return;
         }
@@ -406,7 +304,10 @@ void IndexRebuild::run()
             return false;
         }
         set (stepStart, StepState::running, L"Abrindo " + playlistExe.getFileName() + L"…");
-        return startPlaylist (playlistExe);
+        juce::String detail;
+        auto ok = pc::startPlaylist (playlistExe, pgm_, detail);
+        set (stepStart, ok ? StepState::done : StepState::failed, detail);
+        return ok;
     };
 
     // 3. Copy of what will be removed or rewritten.

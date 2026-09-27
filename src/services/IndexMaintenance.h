@@ -1,6 +1,7 @@
 #pragma once
 
 #include "formats/ntx/NtxIndex.h"
+#include "services/PlaylistProcess.h"
 
 #include <juce_events/juce_events.h>
 
@@ -24,14 +25,6 @@ struct IndexStatus
 
 std::vector<IndexStatus> inspectIndexes (const juce::File& pgm);
 
-// Running program of the Playlist family found in this machine.
-struct PlaylistProgram
-{
-    juce::uint32 pid = 0;
-    juce::String name;
-    juce::File exe;
-};
-
 struct IndexRebuildCheck
 {
     std::vector<PlaylistProgram> playlist; // Playlist Digital processes of this pgm
@@ -54,21 +47,8 @@ IndexRebuildCheck checkIndexRebuild (const juce::File& pgm);
 class IndexRebuild : private juce::Thread
 {
 public:
-    enum class StepState
-    {
-        pending,
-        running,
-        done,
-        failed,
-        skipped
-    };
-
-    struct Step
-    {
-        juce::String title;
-        StepState state = StepState::pending;
-        juce::String detail;
-    };
+    using Step = JobStep;
+    using StepState = JobStep::State;
 
     struct Options
     {
@@ -110,9 +90,7 @@ private:
     void set (int step, StepState state, const juce::String& detail = {});
     void finish (bool ok, const juce::String& outcome);
     bool restoreIndexes (juce::String& error);
-    bool closePlaylist (const std::vector<PlaylistProgram>& programs);
     bool runSeparaComprove (const juce::File& exe);
-    bool startPlaylist (const juce::File& exe);
     bool waitForIndexes();
 
     juce::File pgm_, backupRoot_, backupFolder_;
