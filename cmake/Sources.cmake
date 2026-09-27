@@ -73,4 +73,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/XmlFormatTests.cpp
     tests/DataFormatTests.cpp
     tests/ValidationTests.cpp
+    tests/RealInstallationTests.cpp
 )
