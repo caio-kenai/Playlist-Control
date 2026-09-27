@@ -31,6 +31,9 @@ public:
 
     void chooseInstallation();
 
+    // Hides the floating message (used before rendering screenshots).
+    void dismissToast() { toast_.setVisible (false); }
+
 private:
     struct NavItem
     {

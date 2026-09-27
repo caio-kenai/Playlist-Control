@@ -114,6 +114,7 @@ int renderScreenshots (const juce::ArgumentList& args)
         if (only.isNotEmpty() && ! juce::String (name).contains (only))
             continue;
         main.showView (id);
+        main.dismissToast();
         auto image = main.createComponentSnapshot (main.getLocalBounds(), true, 1.0f);
         juce::PNGImageFormat png;
         auto file = out.getChildFile (juce::String (name) + ".png");
