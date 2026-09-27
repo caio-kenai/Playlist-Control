@@ -35,6 +35,7 @@ MainComponent::MainComponent (Workspace& workspace, AppSettings& settings)
         { ViewId::folders, L"Pastas e códigos", L"Configuração", Icon::folder },
         { ViewId::operators, "Operadores", L"Configuração", Icon::users },
         { ViewId::diagnostics, L"Diagnóstico", "Suporte", Icon::stethoscope },
+        { ViewId::indexes, L"Índices", "Suporte", Icon::database },
         { ViewId::history, L"Histórico", "Suporte", Icon::history },
     };
 

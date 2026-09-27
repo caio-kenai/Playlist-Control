@@ -5,6 +5,7 @@
 #include "install/Installation.h"
 #include "services/DirectoryWatcher.h"
 #include "services/FileSession.h"
+#include "services/IndexMaintenance.h"
 #include "validation/Validators.h"
 
 #include <juce_events/juce_events.h>
@@ -71,6 +72,10 @@ public:
     // Indices\*.NTX compared with the tables they index (read only).
     DiagnosticList verifyIndexes() const;
 
+    // Recreation of the indexes (kept here so it outlives the view that started it).
+    IndexRebuild* indexRebuild() const noexcept { return indexRebuild_.get(); }
+    IndexRebuild* startIndexRebuild (const IndexRebuild::Options& options);
+
     SafeWriter& writer() noexcept { return writer_; }
     HistoryStore& history() noexcept { return history_; }
     void setReadOnly (bool readOnly);
@@ -97,6 +102,7 @@ private:
     PlaylistRuntime runtime_;
     DiagnosticList loadProblems_;
     HistoryStore history_;
+    std::unique_ptr<IndexRebuild> indexRebuild_;
     SafeWriter writer_;
     DirectoryWatcher watcher_;
     std::vector<ActivityEntry> activity_;

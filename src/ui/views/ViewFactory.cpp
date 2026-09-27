@@ -1,6 +1,7 @@
 #include "ui/views/ViewFactory.h"
 #include "ui/views/ConfigView.h"
 #include "ui/views/DashboardView.h"
+#include "ui/views/IndexesView.h"
 #include "ui/views/PlaylistIniView.h"
 #include "ui/views/ReferenceViews.h"
 #include "ui/views/ScheduleView.h"
@@ -21,6 +22,7 @@ std::unique_ptr<View> createNamedView (ViewId id, AppContext& context)
         case ViewId::folders:     return std::make_unique<FoldersView> (context);
         case ViewId::operators:   return std::make_unique<OperatorsView> (context);
         case ViewId::diagnostics: return std::make_unique<DiagnosticsView> (context);
+        case ViewId::indexes:     return std::make_unique<IndexesView> (context);
         case ViewId::history:     return std::make_unique<HistoryView> (context);
     }
     return std::make_unique<DashboardView> (context);

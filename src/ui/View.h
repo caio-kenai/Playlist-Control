@@ -18,6 +18,7 @@ enum class ViewId
     folders,
     operators,
     diagnostics,
+    indexes,
     history
 };
 

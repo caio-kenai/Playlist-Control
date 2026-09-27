@@ -81,7 +81,8 @@ int renderScreenshots (const juce::ArgumentList& args)
         { pc::ui::ViewId::folders, "07-pastas" },
         { pc::ui::ViewId::operators, "08-operadores" },
         { pc::ui::ViewId::diagnostics, "09-diagnostico" },
-        { pc::ui::ViewId::history, "10-historico" },
+        { pc::ui::ViewId::indexes, "10-indices" },
+        { pc::ui::ViewId::history, "11-historico" },
     };
     // --demo-edit performs one edit through the same path as the interface
     // (block edit, validation, safe write, history). Use it only on a copy.

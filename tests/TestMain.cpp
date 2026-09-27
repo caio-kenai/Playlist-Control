@@ -9,9 +9,11 @@
 // Runs every juce::UnitTest in the executable.
 //   playlistcontrol_tests [--category=<name>] [--installation=<pgm folder>]
 // --installation runs the read-only checks against a real installation.
+// --rebuild-demo=<pgm> runs the index recreation on a demonstration copy.
 namespace pc::test
 {
 juce::File installationUnderTest;
+juce::File rebuildDemoUnderTest;
 }
 
 namespace
@@ -34,6 +36,8 @@ int main (int argc, char* argv[])
 
     if (args.containsOption ("--installation"))
         pc::test::installationUnderTest = juce::File (args.getValueForOption ("--installation"));
+    if (args.containsOption ("--rebuild-demo"))
+        pc::test::rebuildDemoUnderTest = juce::File (args.getValueForOption ("--rebuild-demo"));
 
     ConsoleRunner runner;
     runner.setAssertOnFailure (false);

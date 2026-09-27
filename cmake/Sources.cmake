@@ -70,6 +70,8 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/services/FileSession.cpp
     src/services/DirectoryWatcher.h
     src/services/DirectoryWatcher.cpp
+    src/services/IndexMaintenance.h
+    src/services/IndexMaintenance.cpp
     src/services/Workspace.h
     src/services/Workspace.cpp
 )
@@ -85,6 +87,8 @@ set(PLAYLISTCONTROL_APP_SOURCES
     src/ui/View.h
     src/ui/MainComponent.h
     src/ui/MainComponent.cpp
+    src/ui/views/IndexesView.h
+    src/ui/views/IndexesView.cpp
     src/ui/views/ViewFactory.h
     src/ui/views/ViewFactory.cpp
     src/ui/views/DashboardView.h
@@ -114,4 +118,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/RealInstallationTests.cpp
     tests/ServiceTests.cpp
     tests/NtxTests.cpp
+    tests/IndexRebuildTests.cpp
 )

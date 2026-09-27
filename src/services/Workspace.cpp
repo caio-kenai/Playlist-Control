@@ -307,6 +307,15 @@ DiagnosticList Workspace::runFullDiagnostics() const
     return all;
 }
 
+IndexRebuild* Workspace::startIndexRebuild (const IndexRebuild::Options& options)
+{
+    if (! isOpen() || readOnly() || (indexRebuild_ != nullptr && indexRebuild_->running()))
+        return nullptr;
+    indexRebuild_ = std::make_unique<IndexRebuild> (installation_.pgm, history_.root().getParentDirectory().getChildFile ("indices"), options);
+    indexRebuild_->start();
+    return indexRebuild_.get();
+}
+
 DiagnosticList Workspace::verifyIndexes() const
 {
     DiagnosticList out;
@@ -334,7 +343,7 @@ DiagnosticList Workspace::verifyIndexes() const
         d.message = v.summary;
         d.reason = L"O Playlist localiza códigos e comprovações por estes índices. Um índice desatualizado pode fazer um código "
                    L"registrado não ser encontrado. Observado nesta instalação: o Playlist recria os índices LIGA_* ao iniciar.";
-        d.fix = L"Feche e abra o Playlist Digital fora do horário crítico e verifique novamente. Veja docs/INDICES.md.";
+        d.fix = L"Use Suporte > Índices para recriar os índices fora do horário crítico.";
         out.add (d);
     }
     return out;
