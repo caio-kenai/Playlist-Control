@@ -72,6 +72,19 @@ set(PLAYLISTCONTROL_CORE_SOURCES
 
 set(PLAYLISTCONTROL_APP_SOURCES
     src/app/Main.cpp
+    src/ui/Theme.h
+    src/ui/Theme.cpp
+    src/ui/Widgets.h
+    src/ui/Widgets.cpp
+    src/ui/View.h
+    src/ui/MainComponent.h
+    src/ui/MainComponent.cpp
+    src/ui/views/ViewFactory.h
+    src/ui/views/ViewFactory.cpp
+    src/ui/views/DashboardView.h
+    src/ui/views/DashboardView.cpp
+    src/ui/views/ScheduleView.h
+    src/ui/views/ScheduleView.cpp
 )
 
 set(PLAYLISTCONTROL_TEST_SOURCES
