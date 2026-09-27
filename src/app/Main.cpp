@@ -55,7 +55,7 @@ public:
 };
 
 // Renders every view to PNG files without showing a window:
-//   PlaylistControl --screenshots=<folder> --installation=<pgm>
+//   PlaylistControl --screenshots=<folder> --installation=<pgm> [--only=<name>] [--height=<px>]
 int renderScreenshots (const juce::ArgumentList& args)
 {
     juce::File out (args.getValueForOption ("--screenshots"));
@@ -69,7 +69,8 @@ int renderScreenshots (const juce::ArgumentList& args)
         return 2;
 
     pc::ui::MainComponent main (workspace, settings);
-    main.setSize (1440, 900);
+    auto height = args.getValueForOption ("--height").getIntValue();
+    main.setSize (1440, height > 0 ? height : 900);
     const std::pair<pc::ui::ViewId, const char*> shots[] = {
         { pc::ui::ViewId::dashboard, "01-painel" },
         { pc::ui::ViewId::maps, "02-mapas" },
