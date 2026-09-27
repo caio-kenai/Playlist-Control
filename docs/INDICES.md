@@ -67,7 +67,10 @@ reais foram conferidos antes e depois, sem alteração):
   (ou o próximo número livre: `.001`, `.002`…, que ficam na pasta), regrava o `COMPROVE.DBF` — na cópia testada só a
   data de atualização do cabeçalho mudou — e fecha sozinho em menos de um
   segundo;
-- **não** cria arquivos `.NTX`: os índices novos vêm do Playlist ao abrir.
+- **não** cria arquivos `.NTX`: os índices novos vêm do Playlist ao abrir;
+- quando há comprovações de meses anteriores, separa-as em um arquivo por mês:
+  a instalação real tem `Dados\COMPROVE 05-2026.DBF` a `COMPROVE 08-2026.DBF`,
+  todos de 21/09/2026, e o `COMPROVE.DBF` ficou só com o mês corrente.
 
 ## Com o Playlist aberto?
 
