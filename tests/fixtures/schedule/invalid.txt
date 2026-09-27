@@ -1,0 +1,7 @@
+00:00 VH
+25:00 VH
+qualquer coisa
+00:30 (DUR=abc) VH
+00:15 VH
+00:15 VH
+12:00x

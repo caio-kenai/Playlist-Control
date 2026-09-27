@@ -26,6 +26,8 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/formats/playlistini/PlaylistIni.cpp
     src/formats/playlistini/FilePatternResolver.h
     src/formats/playlistini/FilePatternResolver.cpp
+    src/formats/schedule/ScheduleDocument.h
+    src/formats/schedule/ScheduleDocument.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -38,4 +40,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/TextCodecTests.cpp
     tests/StorageTests.cpp
     tests/IniTests.cpp
+    tests/ScheduleTests.cpp
 )

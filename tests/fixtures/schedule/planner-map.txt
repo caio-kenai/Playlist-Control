@@ -1,0 +1,72 @@
+00:00 (DUR=300) 
+00:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+00:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+01:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+01:20 (DUR=300) 
+01:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+02:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+02:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+02:40 (DUR=300) 
+03:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+03:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+03:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+04:00 (DUR=300) 
+04:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+04:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+05:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+05:20 (DUR=300) 
+05:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+06:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+06:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+06:40 (DUR=300) 
+07:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+07:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+07:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+08:00 (DUR=300) 
+08:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+08:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+09:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+09:20 (DUR=300) 
+09:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+10:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+10:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+10:40 (DUR=300) 
+11:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+11:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+11:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+12:00 (DUR=300, ID=Programa Manha) 
+12:20 (DUR=300, ID=Programa Manha) 
+12:40 (DUR=300, ID=Programa Manha) 
+13:00 (DUR=300, ID=Programa Manha) 
+13:20 (DUR=300, ID=Programa Manha) 
+13:40 (DUR=300, ID=Programa Manha) 
+14:00 (DUR=300, ID=Programa Manha) 
+14:20 (DUR=300, ID=Programa Manha) 
+14:40 (DUR=300, ID=Programa Manha) 
+15:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+15:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+15:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+16:00 (DUR=300) 
+16:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+16:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+17:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+17:20 (DUR=300) 
+17:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+18:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+18:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+18:40 (DUR=300) 
+19:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+19:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+19:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+20:00 (DUR=300) 
+20:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+20:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+21:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+21:20 (DUR=300) 
+21:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+22:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+22:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+22:40 (DUR=300) 
+23:00 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+23:20 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 
+23:40 (DUR=300) "A1B2C3D4E5F6|spot_padaria.aac", "Z9Y8X7W6V5U4|chamada_evento.mp3", 

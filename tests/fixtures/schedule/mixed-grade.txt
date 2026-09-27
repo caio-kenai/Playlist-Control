@@ -1,0 +1,6 @@
+10:02 <IALOC>, <IALOC>, <IANEWS>, <IANEWS>
+10:17 , "a.mp3", RAIZ, "b.mp3", 
+10:32 VHT, "c.mp3", , VHT
+10:47 SERTA90, Banda Azul - Céu.mp3
+11:02 
+11:17  
