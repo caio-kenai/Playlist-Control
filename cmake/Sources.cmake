@@ -12,6 +12,13 @@ set(PLAYLISTCONTROL_CORE_SOURCES
 
     src/logging/Logger.h
     src/logging/Logger.cpp
+
+    src/storage/FileIO.h
+    src/storage/FileIO.cpp
+    src/storage/HistoryStore.h
+    src/storage/HistoryStore.cpp
+    src/storage/SafeWriter.h
+    src/storage/SafeWriter.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -22,4 +29,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/TestMain.cpp
     tests/TestUtils.h
     tests/TextCodecTests.cpp
+    tests/StorageTests.cpp
 )
