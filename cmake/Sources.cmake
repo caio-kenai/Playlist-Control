@@ -19,6 +19,13 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/storage/HistoryStore.cpp
     src/storage/SafeWriter.h
     src/storage/SafeWriter.cpp
+
+    src/formats/ini/IniDocument.h
+    src/formats/ini/IniDocument.cpp
+    src/formats/playlistini/PlaylistIni.h
+    src/formats/playlistini/PlaylistIni.cpp
+    src/formats/playlistini/FilePatternResolver.h
+    src/formats/playlistini/FilePatternResolver.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -30,4 +37,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/TestUtils.h
     tests/TextCodecTests.cpp
     tests/StorageTests.cpp
+    tests/IniTests.cpp
 )
