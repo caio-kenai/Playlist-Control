@@ -100,6 +100,11 @@ std::vector<Affiliate> PlaylistIni::affiliates() const
 
 void PlaylistIni::setAffiliates (const std::vector<Affiliate>& list)
 {
+    if (list.empty())
+    {
+        doc_.removeSection (affiliatesSection);
+        return;
+    }
     for (auto& existing : affiliates())
     {
         bool keep = false;

@@ -24,6 +24,7 @@ public:
 
 private:
     struct SourceEditor;
+    struct AffiliatesEditor;
 
     void load();
     void pushToControls();
@@ -40,9 +41,10 @@ private:
     juce::Viewport viewport_;
     juce::Component content_;
     juce::OwnedArray<SourceEditor> sources_;
-    juce::TextEditor affiliates_, beepFile_, beepMinutes_, others_, problems_;
+    std::unique_ptr<AffiliatesEditor> affiliates_;
+    juce::TextEditor beepFile_, beepMinutes_, others_, problems_;
     juce::ToggleButton beepEnabled_ { L"Beep ativo" };
-    juce::Label affiliatesTitle_, beepTitle_, othersTitle_, problemsTitle_, affiliatesHelp_, beepHelp_;
+    juce::Label beepTitle_, othersTitle_, problemsTitle_, beepHelp_;
     juce::TextButton saveButton_ { "Salvar" }, discardButton_ { "Descartar" }, createButton_ { L"Criar PLAYLIST.ini" };
     juce::Label fileTitle_, fileInfo_;
     Banner banner_;

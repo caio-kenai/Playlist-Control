@@ -60,6 +60,18 @@ public:
             expect (text.endsWith ("CENTRO=192.168.0.10:3030\r\nNORTE=10.0.0.2:3030"), text);
         }
 
+        beginTest ("Creating and emptying the affiliates section");
+        {
+            PlaylistIni ini (IniDocument::fromBytes (bytes ("[BLOCO MUSICAL]\r\nFORMATO=AUTO\r\n")));
+            expect (ini.affiliates().empty());
+            ini.setAffiliates ({ { "TIMOTEO", "192.168.5.5:3030" } });
+            expectEquals (ini.document().toString(),
+                          juce::String ("[BLOCO MUSICAL]\r\nFORMATO=AUTO\r\n\r\n[AFILIADAS]\r\nTIMOTEO=192.168.5.5:3030\r\n"));
+            ini.setAffiliates ({});
+            expect (! ini.document().hasSection ("AFILIADAS"));
+            expect (ini.document().toString().startsWith ("[BLOCO MUSICAL]\r\nFORMATO=AUTO"));
+        }
+
         beginTest ("Adding a new section");
         {
             PlaylistIni ini (IniDocument::fromBytes (original));

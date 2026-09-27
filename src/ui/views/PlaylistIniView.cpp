@@ -185,6 +185,236 @@ struct PlaylistIniView::SourceEditor : public juce::Component
     bool updating = false;
 };
 
+// [AFILIADAS]: stations that receive the PLAY/STOP commands sent by this one
+// (network head). One row per affiliate: name, host or IP, data port.
+struct PlaylistIniView::AffiliatesEditor : public juce::Component
+{
+    static constexpr int rowHeight = 40;
+    static constexpr int defaultPort = 3030;
+
+    struct Row : public juce::Component
+    {
+        explicit Row (AffiliatesEditor& o) : owner (o)
+        {
+            for (auto* e : { &name, &host, &port })
+            {
+                addAndMakeVisible (*e);
+                e->setFont (font (14.0f));
+                e->setIndents (8, 7);
+                e->onFocusLost = [this] { owner.apply(); };
+                e->onReturnKey = [this] { owner.apply(); };
+                e->onTextChange = [this] { owner.validate(); };
+            }
+            name.setTextToShowWhenEmpty ("ex.: FABRICIANO", colours::textMuted);
+            host.setTextToShowWhenEmpty (L"IP ou nome da máquina", colours::textMuted);
+            port.setTextToShowWhenEmpty (juce::String (defaultPort), colours::textMuted);
+            port.setInputRestrictions (5, "0123456789");
+            addAndMakeVisible (remove);
+            remove.setTooltip ("Remover esta afiliada");
+            remove.onClick = [this] { owner.removeRow (this); };
+        }
+
+        void resized() override
+        {
+            auto r = getLocalBounds().reduced (0, 4);
+            remove.setBounds (r.removeFromRight (r.getHeight()));
+            r.removeFromRight (8);
+            port.setBounds (r.removeFromRight (90));
+            r.removeFromRight (8);
+            name.setBounds (r.removeFromLeft (r.getWidth() * 2 / 5));
+            r.removeFromLeft (8);
+            host.setBounds (r);
+        }
+
+        // Address as written in the INI: host:port (port defaults to 3030).
+        juce::String address() const
+        {
+            auto p = port.getText().trim();
+            return host.getText().trim() + ":" + (p.isEmpty() ? juce::String (defaultPort) : p);
+        }
+
+        bool isBlank() const { return name.getText().trim().isEmpty() && host.getText().trim().isEmpty(); }
+
+        AffiliatesEditor& owner;
+        juce::TextEditor name, host, port;
+        ActionButton remove { {}, Icon::trash, ActionButton::Style::danger };
+    };
+
+    explicit AffiliatesEditor (PlaylistIniView& o) : owner (o)
+    {
+        addAndMakeVisible (add);
+        add.onClick = [this] {
+            auto* row = rows.add (new Row (*this));
+            addAndMakeVisible (row);
+            owner.layoutContent();
+            row->name.grabKeyboardFocus();
+        };
+    }
+
+    void load (const std::vector<Affiliate>& list, bool editable)
+    {
+        rows.clear();
+        for (auto& a : list)
+        {
+            auto* row = rows.add (new Row (*this));
+            addAndMakeVisible (row);
+            row->name.setText (a.id, false);
+            auto hasPort = a.address.containsChar (':');
+            row->host.setText (hasPort ? a.address.upToLastOccurrenceOf (":", false, false) : a.address, false);
+            row->port.setText (hasPort ? a.address.fromLastOccurrenceOf (":", false, false) : juce::String(), false);
+        }
+        setEditable (editable);
+        validate();
+    }
+
+    void setEditable (bool editable)
+    {
+        editable_ = editable;
+        add.setEnabled (editable);
+        for (auto* row : rows)
+            for (auto* c : std::initializer_list<juce::Component*> { &row->name, &row->host, &row->port, &row->remove })
+                c->setEnabled (editable);
+    }
+
+    int preferredHeight() const
+    {
+        return 106 + juce::jmax (1, rows.size()) * rowHeight + 12 + 34 + 16;
+    }
+
+    // Problem of one row, empty when the row is valid (or still blank).
+    juce::String problemOf (const Row& row) const
+    {
+        if (row.isBlank())
+            return {};
+        auto n = row.name.getText().trim();
+        auto h = row.host.getText().trim();
+        auto p = row.port.getText().trim();
+        if (n.isEmpty())
+            return "Informe o nome da afiliada.";
+        if (n.containsAnyOf ("=[];"))
+            return L"O nome não pode conter = [ ] ;";
+        for (auto* other : rows)
+            if (other != &row && other->name.getText().trim().equalsIgnoreCase (n))
+                return "Nome repetido: " + n + ".";
+        if (h.isEmpty())
+            return L"Informe o IP ou o nome da máquina de " + n + ".";
+        if (h.containsAnyOf (" :=;"))
+            return L"Endereço inválido: " + h + ".";
+        if (p.isNotEmpty() && (p.getIntValue() < 1 || p.getIntValue() > 65535))
+            return L"Porta inválida: " + p + " (1 a 65535).";
+        return {};
+    }
+
+    void validate()
+    {
+        problems.clear();
+        for (auto* row : rows)
+        {
+            auto problem = problemOf (*row);
+            auto colour = problem.isEmpty() ? colours::border : colours::error;
+            for (auto* e : { &row->name, &row->host, &row->port })
+            {
+                e->setColour (juce::TextEditor::outlineColourId, colour);
+                e->repaint();
+            }
+            if (problem.isNotEmpty())
+                problems.add (problem);
+        }
+        repaint();
+    }
+
+    // Writes the valid rows to the document when they differ from it.
+    void apply()
+    {
+        validate();
+        if (! owner.ini_.has_value() || ! editable_ || ! problems.isEmpty())
+            return;
+        std::vector<Affiliate> list;
+        for (auto* row : rows)
+            if (! row->isBlank())
+                list.push_back ({ row->name.getText().trim(), row->address() });
+        auto before = owner.ini_->affiliates();
+        bool same = before.size() == list.size();
+        for (size_t i = 0; same && i < list.size(); ++i)
+            same = before[i].id == list[i].id && before[i].address == list[i].address;
+        if (same)
+            return;
+        owner.ini_->setAffiliates (list);
+        owner.edited (list.size() < before.size() ? juce::String ("Afiliada removida")
+                                                  : juce::String ("[AFILIADAS] ") + juce::String ((int) list.size()) + " afiliada(s)");
+    }
+
+    void removeRow (Row* row)
+    {
+        rows.removeObject (row);
+        owner.layoutContent();
+        apply();
+    }
+
+    void paint (juce::Graphics& g) override
+    {
+        auto r = getLocalBounds().toFloat().reduced (0.5f);
+        g.setColour (colours::panel);
+        g.fillRoundedRectangle (r, 6.0f);
+        g.setColour (colours::border);
+        g.drawRoundedRectangle (r, 6.0f, 1.0f);
+        g.setColour (colours::brandLight);
+        g.fillRoundedRectangle (juce::Rectangle<float> (14, 14, 4, 16), 2.0f);
+        g.setColour (colours::text);
+        g.setFont (font (15.0f, true));
+        g.drawText ("Afiliadas de rede", 24, 10, getWidth() - 40, 24, juce::Justification::centredLeft, false);
+        g.setColour (colours::textMuted);
+        g.setFont (monoFont (12.5f));
+        g.drawText ("[AFILIADAS]", 24, 10, getWidth() - 40, 24, juce::Justification::centredRight, false);
+        g.setFont (font (12.5f));
+        g.drawFittedText (L"Emissoras que recebem os comandos PLAY/STOP enviados por esta (cabeça de rede). "
+                          L"Não cadastre a própria emissora. A porta é a porta de dados do Playlist da afiliada (padrão 3030).",
+                          juce::Rectangle<int> (16, 38, getWidth() - 32, 44), juce::Justification::topLeft, 3, 1.0f);
+
+        auto header = juce::Rectangle<int> (16, 84, getWidth() - 32, 20);
+        g.setFont (font (11.5f, true));
+        g.setColour (colours::textMuted);
+        auto cols = header;
+        cols.removeFromRight (rowHeight - 8 + 8);
+        g.drawText ("PORTA", cols.removeFromRight (90).withTrimmedLeft (8), juce::Justification::centredLeft, false);
+        cols.removeFromRight (8);
+        auto nameCol = cols.removeFromLeft (cols.getWidth() * 2 / 5);
+        g.drawText ("NOME", nameCol.withTrimmedLeft (8), juce::Justification::centredLeft, false);
+        g.drawText (L"ENDEREÇO (IP OU MÁQUINA)", cols.withTrimmedLeft (16), juce::Justification::centredLeft, false);
+
+        if (rows.isEmpty())
+        {
+            g.setFont (font (13.0f));
+            g.drawText ("Nenhuma afiliada cadastrada.", juce::Rectangle<int> (16, 106, getWidth() - 32, rowHeight),
+                        juce::Justification::centredLeft, false);
+        }
+        if (! problems.isEmpty())
+        {
+            g.setColour (colours::error);
+            g.setFont (font (12.5f));
+            g.drawText (problems[0], add.getBounds().withLeft (add.getRight() + 14).withRight (getWidth() - 16),
+                        juce::Justification::centredLeft, true);
+        }
+    }
+
+    void resized() override
+    {
+        auto r = getLocalBounds().reduced (16, 0).withTrimmedTop (106);
+        for (auto* row : rows)
+            row->setBounds (r.removeFromTop (rowHeight));
+        if (rows.isEmpty())
+            r.removeFromTop (rowHeight);
+        r.removeFromTop (12);
+        add.setBounds (r.removeFromTop (34).withWidth (add.preferredWidth (34)));
+    }
+
+    PlaylistIniView& owner;
+    juce::OwnedArray<Row> rows;
+    ActionButton add { "Adicionar afiliada", Icon::plus, ActionButton::Style::secondary };
+    juce::StringArray problems;
+    bool editable_ = false;
+};
+
 PlaylistIniView::PlaylistIniView (AppContext& context) : View (context)
 {
     addAndMakeVisible (viewport_);
@@ -194,48 +424,21 @@ PlaylistIniView::PlaylistIniView (AppContext& context) : View (context)
     for (auto k : { ScheduleKind::commercial, ScheduleKind::musical, ScheduleKind::commercialClock, ScheduleKind::musicalClock })
         content_.addAndMakeVisible (sources_.add (new SourceEditor (*this, k)));
 
-    for (auto* l : { &affiliatesTitle_, &beepTitle_, &othersTitle_, &problemsTitle_ })
+    for (auto* l : { &beepTitle_, &othersTitle_, &problemsTitle_ })
     {
         content_.addAndMakeVisible (*l);
         styleLabel (*l, 15.0f, true);
     }
-    affiliatesTitle_.setText (L"Afiliadas de rede [AFILIADAS]", juce::dontSendNotification);
     beepTitle_.setText ("Beep [BEEP]", juce::dontSendNotification);
     othersTitle_.setText (L"Outras seções (mantidas como estão)", juce::dontSendNotification);
     problemsTitle_.setText (L"Verificação", juce::dontSendNotification);
-    for (auto* l : { &affiliatesHelp_, &beepHelp_ })
-    {
-        content_.addAndMakeVisible (*l);
-        styleLabel (*l, 12.0f, false, colours::textMuted);
-    }
-    affiliatesHelp_.setText (L"Uma por linha: NOME=host:porta. Emissoras que recebem os disparos PLAY/STOP desta.", juce::dontSendNotification);
+    content_.addAndMakeVisible (beepHelp_);
+    styleLabel (beepHelp_, 12.0f, false, colours::textMuted);
     beepHelp_.setText (L"Arquivo (relativo à pasta pgm ou caminho completo) e minutos da hora em que toca, ex.: 0,15,30,45.",
                        juce::dontSendNotification);
 
-    content_.addAndMakeVisible (affiliates_);
-    affiliates_.setMultiLine (true, false);
-    affiliates_.setReturnKeyStartsNewLine (true);
-    affiliates_.setFont (monoFont (13.5f));
-    affiliates_.onFocusLost = [this] {
-        if (! ini_.has_value())
-            return;
-        std::vector<Affiliate> list;
-        for (auto& line : juce::StringArray::fromLines (affiliates_.getText()))
-        {
-            auto t = line.trim();
-            if (t.isEmpty() || ! t.containsChar ('='))
-                continue;
-            list.push_back ({ t.upToFirstOccurrenceOf ("=", false, false).trim(), t.fromFirstOccurrenceOf ("=", false, false).trim() });
-        }
-        auto before = ini_->affiliates();
-        bool same = before.size() == list.size();
-        for (size_t i = 0; same && i < list.size(); ++i)
-            same = before[i].id == list[i].id && before[i].address == list[i].address;
-        if (same)
-            return;
-        ini_->setAffiliates (list);
-        edited (L"Afiliadas atualizadas");
-    };
+    affiliates_ = std::make_unique<AffiliatesEditor> (*this);
+    content_.addAndMakeVisible (*affiliates_);
 
     content_.addAndMakeVisible (beepEnabled_);
     content_.addAndMakeVisible (beepFile_);
@@ -340,15 +543,12 @@ void PlaylistIniView::pushToControls()
         s->format.setEnabled (editable);
         s->pattern.setEnabled (editable);
     }
-    for (auto* c : std::initializer_list<juce::Component*> { &affiliates_, &beepEnabled_, &beepFile_, &beepMinutes_ })
+    for (auto* c : std::initializer_list<juce::Component*> { &beepEnabled_, &beepFile_, &beepMinutes_ })
         c->setEnabled (editable);
+    affiliates_->load (has ? ini_->affiliates() : std::vector<Affiliate> {}, editable);
 
     if (has)
     {
-        juce::String aff;
-        for (auto& a : ini_->affiliates())
-            aff << a.id << "=" << a.address << "\n";
-        affiliates_.setText (aff.trimEnd(), false);
         auto b = ini_->beep();
         beepEnabled_.setToggleState (b.present, juce::dontSendNotification);
         beepFile_.setText (b.file, false);
@@ -472,7 +672,7 @@ void PlaylistIniView::layoutContent()
     auto width = viewport_.getMaximumVisibleWidth();
     auto r = juce::Rectangle<int> (0, 0, width, 10000).reduced (16, 12);
     auto half = (r.getWidth() - 12) / 2;
-    auto cardHeight = 330;
+    auto cardHeight = 300;
     for (int i = 0; i < sources_.size(); i += 2)
     {
         auto row = r.removeFromTop (cardHeight);
@@ -482,12 +682,11 @@ void PlaylistIniView::layoutContent()
             sources_[i + 1]->setBounds (row);
         r.removeFromTop (12);
     }
-    auto row = r.removeFromTop (190);
+    auto row = r.removeFromTop (juce::jmax (190, affiliates_->preferredHeight()));
     auto left = row.removeFromLeft (half);
-    affiliatesTitle_.setBounds (left.removeFromTop (26));
-    affiliatesHelp_.setBounds (left.removeFromTop (20));
-    affiliates_.setBounds (left);
+    affiliates_->setBounds (left);
     row.removeFromLeft (12);
+    row.removeFromTop (6);
     beepTitle_.setBounds (row.removeFromTop (26));
     beepHelp_.setBounds (row.removeFromTop (20));
     beepEnabled_.setBounds (row.removeFromTop (28));
