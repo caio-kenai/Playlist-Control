@@ -80,11 +80,11 @@ int renderScreenshots (const juce::ArgumentList& args)
         { pc::ui::ViewId::playlistIni, "05-leitura-de-mapas" },
         { pc::ui::ViewId::config, "06-opcoes" },
         { pc::ui::ViewId::configManager, "07-config-manager" },
-        { pc::ui::ViewId::folders, "07b-codigos" },
-        { pc::ui::ViewId::operators, "08-operadores" },
-        { pc::ui::ViewId::diagnostics, "09-diagnostico" },
-        { pc::ui::ViewId::indexes, "10-indices" },
-        { pc::ui::ViewId::history, "11-historico" },
+        { pc::ui::ViewId::folders, "10-codigos" },
+        { pc::ui::ViewId::operators, "11-operadores" },
+        { pc::ui::ViewId::diagnostics, "12-diagnostico" },
+        { pc::ui::ViewId::indexes, "13-indices" },
+        { pc::ui::ViewId::history, "14-historico" },
     };
     // --demo-edit performs one edit through the same path as the interface
     // (block edit, validation, safe write, history). Use it only on a copy.
@@ -124,7 +124,7 @@ int renderScreenshots (const juce::ArgumentList& args)
         juce::FileOutputStream stream (file);
         png.writeImageToStream (image, stream);
     }
-    if (only.isEmpty() || only.contains ("07"))
+    if (only.isEmpty() || only.contains ("config"))
         if (workspace.folders().has_value() && ! workspace.folders()->folders().empty())
         {
             auto* f = &workspace.folders()->folders().front();

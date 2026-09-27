@@ -578,10 +578,10 @@ void ConfigManagerView::captureDialogs (const juce::File& pgm, const juce::Strin
     NewFolderDialog added ([] (FolderKind) {});
     added.types.setSelectedId (7, juce::dontSendNotification);
     added.describe();
-    save (added, "07c-nova-pasta.png");
+    save (added, "08-config-manager-nova-pasta.png");
     IconPickerDialog picker (pgm.getChildFile ("Icones"), iconFile, iconIndex, [] (const juce::String&, int) {});
     picker.resized();
-    save (picker, "07d-icone.png");
+    save (picker, "09-config-manager-icone.png");
 }
 
 ConfigManagerView::ConfigManagerView (AppContext& context) : View (context)
