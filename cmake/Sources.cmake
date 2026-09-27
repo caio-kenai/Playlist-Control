@@ -89,6 +89,10 @@ set(PLAYLISTCONTROL_APP_SOURCES
     src/ui/views/PlaylistIniView.cpp
     src/ui/views/ConfigView.h
     src/ui/views/ConfigView.cpp
+    src/ui/views/ReferenceViews.h
+    src/ui/views/ReferenceViews.cpp
+    src/ui/Table.h
+    src/ui/Table.cpp
 )
 
 set(PLAYLISTCONTROL_TEST_SOURCES
