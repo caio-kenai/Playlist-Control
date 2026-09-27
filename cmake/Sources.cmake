@@ -38,6 +38,12 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/formats/folders/FoldersXml.cpp
     src/formats/operators/OperatorProfile.h
     src/formats/operators/OperatorProfile.cpp
+    src/formats/dbf/DbfTable.h
+    src/formats/dbf/DbfTable.cpp
+    src/formats/ntx/NtxHeader.h
+    src/formats/ntx/NtxHeader.cpp
+    src/formats/montagem/MontagemFile.h
+    src/formats/montagem/MontagemFile.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -52,4 +58,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/IniTests.cpp
     tests/ScheduleTests.cpp
     tests/XmlFormatTests.cpp
+    tests/DataFormatTests.cpp
 )
