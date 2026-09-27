@@ -1,6 +1,7 @@
 #include "services/Workspace.h"
 #include "logging/Logger.h"
 #include "storage/FileIO.h"
+#include "formats/ntx/NtxIndex.h"
 
 namespace pc
 {
@@ -302,7 +303,41 @@ DiagnosticList Workspace::runFullDiagnostics() const
         if (readFileShared (f, m, err))
             all.addAll (validateMerge (MontagemFile::parse (m), f, folders_.has_value() ? &*folders_ : nullptr));
     }
+    all.addAll (verifyIndexes());
     return all;
+}
+
+DiagnosticList Workspace::verifyIndexes() const
+{
+    DiagnosticList out;
+    auto pgm = installation_.pgm;
+    std::optional<DbfTable> comprove;
+    juce::MemoryBlock m;
+    juce::String err;
+    if (readFileShared (pgm.getChildFile ("Dados/COMPROVE.DBF"), m, err))
+        comprove = DbfTable::parse (m, err);
+
+    for (auto& f : pgm.getChildFile ("Indices").findChildFiles (juce::File::findFiles, false, "*.NTX"))
+    {
+        const DbfTable* table = f.getFileName().startsWithIgnoreCase ("LIGA") ? (ligacao_ ? &*ligacao_ : nullptr)
+                              : f.getFileName().startsWithIgnoreCase ("COMPROVE") ? (comprove ? &*comprove : nullptr) : nullptr;
+        juce::MemoryBlock bytes;
+        if (table == nullptr || ! readFileShared (f, bytes, err))
+            continue;
+        auto v = verifyNtx (bytes, *table);
+        if (v.consistent)
+            continue;
+        Diagnostic d;
+        d.severity = v.readable ? Severity::warning : Severity::error;
+        d.code = "index.inconsistent";
+        d.file = f;
+        d.message = v.summary;
+        d.reason = L"O Playlist localiza códigos e comprovações por estes índices. Um índice desatualizado pode fazer um código "
+                   L"registrado não ser encontrado. Observado nesta instalação: o Playlist recria os índices LIGA_* ao iniciar.";
+        d.fix = L"Feche e abra o Playlist Digital fora do horário crítico e verifique novamente. Veja docs/INDICES.md.";
+        out.add (d);
+    }
+    return out;
 }
 
 } // namespace pc

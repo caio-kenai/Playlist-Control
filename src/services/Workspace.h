@@ -68,6 +68,9 @@ public:
     // Every check the application knows, over every file.
     DiagnosticList runFullDiagnostics() const;
 
+    // Indices\*.NTX compared with the tables they index (read only).
+    DiagnosticList verifyIndexes() const;
+
     SafeWriter& writer() noexcept { return writer_; }
     HistoryStore& history() noexcept { return history_; }
     void setReadOnly (bool readOnly);

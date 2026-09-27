@@ -39,9 +39,15 @@ public:
         {
             auto all = ws.runFullDiagnostics();
             bool merge = false;
+            juce::StringArray staleIndexes;
             for (auto& d : all.items())
+            {
                 merge = merge || d.code == "merge.folder";
+                if (d.code == "index.inconsistent")
+                    staleIndexes.add (d.file.getFileName());
+            }
             expect (merge, all.toText (50));
+            expect (staleIndexes == juce::StringArray ("LIGA_ARQ.NTX"), staleIndexes.joinIntoString (","));
         }
 
         beginTest ("File session detects external changes and refuses to overwrite");
