@@ -9,24 +9,24 @@ compilação, testes, revisão e commit.
 |---|---|---|---|
 | 1 | Auditoria | manuais, programas instalados, `pgm`, logs | concluída |
 | 2 | Documentação técnica | `ARCHITECTURE.md`, este plano | concluída |
-| 3 | Projeto CMake + JUCE | JUCE 9 como submódulo, `playlistcontrol_core`, app, testes, script de build || concluída |
-| 4 | Core e storage | `TextCodec`, `FileSnapshot`, `SafeWriter`, `HistoryStore`, logger || concluída |
-| 5 | INI sem perda + `PlaylistIni` | leitura/escrita byte a byte, esquema, resolução de padrões `%d%m%Y%a%w`, busca AUTO || concluída |
-| 6 | TXT1 sem perda | `ScheduleDocument` (mapas, grades, relógios, modelos), parâmetros, itens || concluída |
-| 7 | XML por patch | `XmlPatchDocument`, `ConfigXml` + esquema, `FoldersXml` || concluída |
-| 8 | DBF/NTX/Montagem (leitura) | `DbfTable`, `NtxHeader`, `MontagemFile` || concluída |
-| 9 | Catálogo e validação | `CodeCatalog`, validadores, diagnósticos com local, causa e correção || concluída |
-| 10 | Ecossistema | `OriginDetector`, `LifecyclePolicy`, leitura de `Emissora.xml`, Sync Service, `SERVER.INI` || concluída |
-| 11 | Instalação | detecção (registro, `C:`/`D:`, Commercial), validação, confirmação, `ProcessMonitor` || concluída |
-| 12 | Serviços | `Workspace`, `DocumentSession` (snapshot/conflito), `DirectoryWatcher`, feed de atividades || concluída |
-| 13 | Interface | tema, janela principal, navegação, modo somente leitura || concluída |
-| 14 | Mapas/Grades/Relógios | visualização em blocos, edição de itens e parâmetros, dia/arquivo ativo || concluída |
-| 15 | Playlist.ini e CONFIG.XML | formulários estruturados, exigência de Playlist fechado onde necessário || concluída |
-| 16 | Pastas e códigos | Config Manager somente leitura: pastas, tipos, códigos, registros e validade || concluída |
-| 17 | Painel e diagnóstico | status, arquivos ativos, alertas, verificação cruzada || concluída |
-| 18 | Histórico | lista, diferença, restauração || concluída |
-| 19 | Testes reais | cópia da `pgm` + leitura da instalação real sem gravar || concluída |
-| 20 | README, Release, publicação | build Release, documentação final, push || concluída |
+| 3 | Projeto CMake + JUCE | JUCE 9 como submódulo, `playlistcontrol_core`, app, testes, script de build | concluída |
+| 4 | Core e storage | `TextCodec`, `FileSnapshot`, `SafeWriter`, `HistoryStore`, logger | concluída |
+| 5 | INI sem perda + `PlaylistIni` | leitura/escrita byte a byte, esquema, resolução de padrões `%d%m%Y%a%w`, busca AUTO | concluída |
+| 6 | TXT1 sem perda | `ScheduleDocument` (mapas, grades, relógios, modelos), parâmetros, itens | concluída |
+| 7 | XML por patch | `XmlPatchDocument`, `ConfigXml` + esquema, `FoldersXml` | concluída |
+| 8 | DBF/NTX/Montagem (leitura) | `DbfTable`, `NtxHeader`, `MontagemFile` | concluída |
+| 9 | Catálogo e validação | `CodeCatalog`, validadores, diagnósticos com local, causa e correção | concluída |
+| 10 | Ecossistema | `OriginDetector`, `LifecyclePolicy`, leitura de `Emissora.xml`, Sync Service, `SERVER.INI` | concluída |
+| 11 | Instalação | detecção (registro, `C:`/`D:`, Commercial), validação, confirmação, `ProcessMonitor` | concluída |
+| 12 | Serviços | `Workspace`, `DocumentSession` (snapshot/conflito), `DirectoryWatcher`, feed de atividades | concluída |
+| 13 | Interface | tema, janela principal, navegação, modo somente leitura | concluída |
+| 14 | Mapas/Grades/Relógios | visualização em blocos, edição de itens e parâmetros, dia/arquivo ativo | concluída |
+| 15 | Playlist.ini e CONFIG.XML | formulários estruturados, exigência de Playlist fechado onde necessário | concluída |
+| 16 | Pastas e códigos | Config Manager somente leitura: pastas, tipos, códigos, registros e validade | concluída |
+| 17 | Painel e diagnóstico | status, arquivos ativos, alertas, verificação cruzada | concluída |
+| 18 | Histórico | lista, diferença, restauração | concluída |
+| 19 | Testes reais | cópia da `pgm` + leitura da instalação real sem gravar | concluída |
+| 20 | README, Release, publicação | build Release, documentação final, push | concluída |
 | 21 | Índices (tese) | verificador NTX, experimento em cópia, conclusão | |
 
 ## Estratégia de testes
