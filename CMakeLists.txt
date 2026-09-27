@@ -20,6 +20,21 @@ if(NOT WIN32)
     message(FATAL_ERROR "PlaylistControl targets Windows, where the Playlist Digital runs.")
 endif()
 
+# A localized MSVC prints the /showIncludes prefix in the system language
+# ("Observação: incluindo arquivo:" in pt-BR) encoded as UTF-8. CMake reads it
+# with the console code page and stores a garbled prefix, and Ninja then stops
+# tracking header dependencies. Detect it again reading the output as UTF-8.
+if(MSVC AND CMAKE_GENERATOR MATCHES "Ninja")
+    set(_probe "${CMAKE_BINARY_DIR}/CMakeFiles/ShowIncludes")
+    file(WRITE "${_probe}/probe.h" "")
+    file(WRITE "${_probe}/probe.c" "#include \"probe.h\"\n")
+    execute_process(COMMAND "${CMAKE_C_COMPILER}" /nologo /showIncludes /Zs probe.c
+                    WORKING_DIRECTORY "${_probe}" OUTPUT_VARIABLE _out ERROR_VARIABLE _out ENCODING UTF8)
+    if(_out MATCHES "([^\r\n]*: )[ ]*[A-Za-z]:[\\/][^\r\n]*probe\\.h")
+        set(CMAKE_CL_SHOWINCLUDES_PREFIX "${CMAKE_MATCH_1}")
+    endif()
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
