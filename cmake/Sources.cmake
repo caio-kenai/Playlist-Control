@@ -13,6 +13,8 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/core/TimeOfDay.cpp
     src/core/LineDiff.h
     src/core/LineDiff.cpp
+    src/core/TextCase.h
+    src/core/TextCase.cpp
 
     src/logging/Logger.h
     src/logging/Logger.cpp
@@ -76,6 +78,8 @@ set(PLAYLISTCONTROL_APP_SOURCES
     src/app/Main.cpp
     src/ui/Theme.h
     src/ui/Theme.cpp
+    src/ui/Icons.h
+    src/ui/Icons.cpp
     src/ui/Widgets.h
     src/ui/Widgets.cpp
     src/ui/View.h

@@ -1,5 +1,6 @@
 #include "ui/views/ReferenceViews.h"
 #include "core/LineDiff.h"
+#include "core/TextCase.h"
 #include "formats/playlistini/FilePatternResolver.h"
 #include "storage/FileIO.h"
 
@@ -327,7 +328,7 @@ void DiagnosticsView::show (const Diagnostic& d)
 {
     current_ = d;
     juce::String t;
-    t << toDisplayString (d.severity).toUpperCase() << "\n" << d.message << "\n\n";
+    t << toUpperLatin (toDisplayString (d.severity)) << "\n" << d.message << "\n\n";
     t << L"Onde: " << d.file.getFullPathName() << (d.line > 0 ? L", linha " + juce::String (d.line) : juce::String()) << "\n";
     if (d.excerpt.isNotEmpty())
         t << "Trecho: " << d.excerpt << "\n";

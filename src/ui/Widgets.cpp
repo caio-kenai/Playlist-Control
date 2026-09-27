@@ -66,6 +66,151 @@ void Banner::resized()
     action_.setBounds (getWidth() - w - 8, 5, w, getHeight() - 10);
 }
 
+ActionButton::ActionButton (const juce::String& text, std::optional<Icon> icon, Style style)
+    : juce::Button (text), icon_ (icon), style_ (style)
+{
+    setMouseCursor (juce::MouseCursor::PointingHandCursor);
+}
+
+int ActionButton::preferredWidth (int height) const
+{
+    auto textWidth = getButtonText().isEmpty() ? 0.0f : juce::GlyphArrangement::getStringWidth (font (14.0f, true), getButtonText());
+    auto iconWidth = icon_.has_value() ? (float) height * 0.5f + (getButtonText().isEmpty() ? 0.0f : 8.0f) : 0.0f;
+    return (int) std::ceil (textWidth + iconWidth + (getButtonText().isEmpty() ? (float) height * 0.5f : 30.0f));
+}
+
+void ActionButton::paintButton (juce::Graphics& g, bool over, bool down)
+{
+    auto r = getLocalBounds().toFloat().reduced (0.5f);
+    const float radius = 8.0f;
+    juce::Colour fill, border, text;
+    switch (style_)
+    {
+        case Style::primary:
+            fill = colours::brandLight;
+            border = colours::brandLight.darker (0.25f);
+            text = juce::Colours::white;
+            if (over) fill = fill.brighter (0.12f);
+            break;
+        case Style::secondary:
+            fill = over ? colours::panelAlt : colours::panel;
+            border = over ? colours::brandLight.withAlpha (0.55f) : colours::border;
+            text = colours::text;
+            break;
+        case Style::danger:
+            fill = over ? colours::errorBack.darker (0.03f) : colours::panel;
+            border = colours::error.withAlpha (over ? 0.8f : 0.45f);
+            text = colours::error;
+            break;
+        case Style::header:
+            fill = juce::Colours::white.withAlpha (over ? 0.16f : 0.08f);
+            border = juce::Colours::white.withAlpha (over ? 0.35f : 0.18f);
+            text = juce::Colours::white;
+            break;
+        case Style::headerAccent:
+            fill = juce::Colour (0xffffb020).withAlpha (over ? 0.32f : 0.22f);
+            border = juce::Colour (0xffffc452).withAlpha (0.8f);
+            text = juce::Colour (0xffffe2a8);
+            break;
+    }
+    if (down)
+        fill = fill.darker (0.08f);
+    if (! isEnabled())
+    {
+        fill = fill.withMultipliedAlpha (0.55f);
+        border = border.withMultipliedAlpha (0.5f);
+        text = text.withMultipliedAlpha (0.45f);
+    }
+    if (style_ == Style::primary && isEnabled())
+    {
+        g.setGradientFill (juce::ColourGradient (fill.brighter (0.08f), 0, r.getY(), fill.darker (0.08f), 0, r.getBottom(), false));
+        g.fillRoundedRectangle (r, radius);
+    }
+    else
+    {
+        g.setColour (fill);
+        g.fillRoundedRectangle (r, radius);
+    }
+    g.setColour (border);
+    g.drawRoundedRectangle (r, radius, 1.0f);
+    if (hasKeyboardFocus (false) && style_ != Style::header && style_ != Style::headerAccent)
+    {
+        g.setColour (colours::brandLight.withAlpha (0.35f));
+        g.drawRoundedRectangle (r.expanded (1.5f), radius + 1.5f, 2.0f);
+    }
+
+    auto content = getLocalBounds().toFloat().reduced (12.0f, 0.0f);
+    auto label = getButtonText();
+    auto iconSize = juce::jmin (18.0f, (float) getHeight() * 0.5f);
+    auto textWidth = label.isEmpty() ? 0.0f : juce::GlyphArrangement::getStringWidth (font (14.0f, true), label);
+    auto total = textWidth + (icon_.has_value() ? iconSize + (label.isEmpty() ? 0.0f : 8.0f) : 0.0f);
+    auto x = content.getCentreX() - total / 2.0f;
+    if (icon_.has_value())
+    {
+        drawIcon (g, *icon_, { x, content.getCentreY() - iconSize / 2.0f, iconSize, iconSize }, text, 1.8f);
+        x += iconSize + 8.0f;
+    }
+    if (label.isNotEmpty())
+    {
+        g.setColour (text);
+        g.setFont (font (14.0f, true));
+        g.drawText (label, juce::Rectangle<float> (x, 0.0f, textWidth + 2.0f, (float) getHeight()), juce::Justification::centredLeft, false);
+    }
+}
+
+Toast::Toast()
+{
+    setInterceptsMouseClicks (false, false);
+    setVisible (false);
+}
+
+int Toast::preferredWidth() const
+{
+    return juce::jmin (560, (int) juce::GlyphArrangement::getStringWidth (font (13.5f), text_) + 64);
+}
+
+void Toast::show (const juce::String& text, Severity severity)
+{
+    text_ = text;
+    severity_ = severity;
+    shownAt_ = juce::Time::getMillisecondCounter();
+    setAlpha (1.0f);
+    setVisible (true);
+    if (auto* parent = getParentComponent())
+        parent->resized();
+    toFront (false);
+    repaint();
+    startTimerHz (30);
+}
+
+void Toast::timerCallback()
+{
+    auto elapsed = (int) (juce::Time::getMillisecondCounter() - shownAt_);
+    const int visibleFor = 3200, fade = 500;
+    if (elapsed > visibleFor + fade)
+    {
+        stopTimer();
+        setVisible (false);
+        return;
+    }
+    if (elapsed > visibleFor)
+        setAlpha (1.0f - (float) (elapsed - visibleFor) / (float) fade);
+}
+
+void Toast::paint (juce::Graphics& g)
+{
+    auto r = getLocalBounds().toFloat().reduced (2.0f);
+    juce::DropShadow (juce::Colours::black.withAlpha (0.18f), 10, { 0, 3 }).drawForRectangle (g, r.toNearestInt());
+    g.setColour (juce::Colour (0xff1f2a37));
+    g.fillRoundedRectangle (r, 9.0f);
+    auto accent = severity_ == Severity::info ? colours::ok : severityColour (severity_);
+    g.setColour (accent);
+    g.fillEllipse (r.getX() + 14.0f, r.getCentreY() - 4.0f, 8.0f, 8.0f);
+    g.setColour (juce::Colours::white);
+    g.setFont (font (13.5f));
+    g.drawFittedText (text_, r.toNearestInt().withTrimmedLeft (32).withTrimmedRight (12), juce::Justification::centredLeft, 2);
+}
+
 void makePrimary (juce::TextButton& b)
 {
     b.setColour (juce::TextButton::buttonColourId, colours::brandLight);

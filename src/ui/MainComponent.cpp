@@ -1,4 +1,5 @@
 #include "ui/MainComponent.h"
+#include "core/TextCase.h"
 #include "logging/Logger.h"
 #include "ui/views/ViewFactory.h"
 
@@ -12,9 +13,10 @@ using namespace theme;
 
 namespace
 {
-constexpr int headerHeight = 58;
-constexpr int sidebarWidth = 212;
-constexpr int statusHeight = 26;
+constexpr int headerHeight = 64;
+constexpr int sidebarWidth = 236;
+constexpr int headerButtonHeight = 36;
+constexpr int chipWidth = 148;
 } // namespace
 
 MainComponent::MainComponent (Workspace& workspace, AppSettings& settings)
@@ -24,29 +26,29 @@ MainComponent::MainComponent (Workspace& workspace, AppSettings& settings)
                  [this] (ViewId id, const juce::File& f, int line) { showView (id, f, line); } }
 {
     nav_ = {
-        { ViewId::dashboard, "Painel", "" },
-        { ViewId::maps, "Mapas comerciais", L"Programação" },
-        { ViewId::grades, "Grades musicais", L"Programação" },
-        { ViewId::clocks, L"Relógios", L"Programação" },
-        { ViewId::playlistIni, "Leitura de mapas", L"Configuração" },
-        { ViewId::config, L"Opções do Playlist", L"Configuração" },
-        { ViewId::folders, L"Pastas e códigos", L"Configuração" },
-        { ViewId::operators, "Operadores", L"Configuração" },
-        { ViewId::diagnostics, L"Diagnóstico", "Suporte" },
-        { ViewId::history, L"Histórico", "Suporte" },
+        { ViewId::dashboard, "Painel", "", Icon::dashboard },
+        { ViewId::maps, "Mapas comerciais", L"Programação", Icon::maps },
+        { ViewId::grades, "Grades musicais", L"Programação", Icon::grades },
+        { ViewId::clocks, L"Relógios", L"Programação", Icon::clock },
+        { ViewId::playlistIni, "Leitura de mapas", L"Configuração", Icon::fileSettings },
+        { ViewId::config, L"Opções do Playlist", L"Configuração", Icon::sliders },
+        { ViewId::folders, L"Pastas e códigos", L"Configuração", Icon::folder },
+        { ViewId::operators, "Operadores", L"Configuração", Icon::users },
+        { ViewId::diagnostics, L"Diagnóstico", "Suporte", Icon::stethoscope },
+        { ViewId::history, L"Histórico", "Suporte", Icon::history },
     };
 
     addAndMakeVisible (banner_);
+    addChildComponent (toast_);
     for (auto* b : { &modeButton_, &installButton_, &reloadButton_ })
     {
         addAndMakeVisible (*b);
-        b->setColour (juce::TextButton::buttonColourId, colours::brand.brighter (0.15f));
-        b->setColour (juce::TextButton::textColourOffId, juce::Colours::white);
+        b->setStyle (ActionButton::Style::header);
     }
-    installButton_.setButtonText (L"Instalação");
-    installButton_.setTooltip (L"Escolher a pasta pgm do Playlist Digital");
+    installButton_.setIcon (Icon::folderOpen);
+    installButton_.setTooltip (L"Instalação: escolher a pasta pgm do Playlist Digital");
     installButton_.onClick = [this] { chooseInstallation(); };
-    reloadButton_.setButtonText ("Recarregar");
+    reloadButton_.setIcon (Icon::refresh);
     reloadButton_.setTooltip (L"Lê novamente todos os arquivos da instalação (F5)");
     reloadButton_.onClick = [this] {
         guardUnsaved ([this] {
@@ -86,9 +88,8 @@ MainComponent::~MainComponent()
 
 void MainComponent::setStatus (const juce::String& text)
 {
-    status_ = text;
-    statusTime_ = juce::Time::getCurrentTime();
-    repaint (0, getHeight() - statusHeight, getWidth(), statusHeight);
+    if (text.isNotEmpty())
+        toast_.show (text);
 }
 
 void MainComponent::updateBanner()
@@ -100,9 +101,11 @@ void MainComponent::updateBanner()
                       L"Permitir alterações", [this] { modeButton_.triggerClick(); });
     else
         banner_.hideBanner();
-    modeButton_.setButtonText (workspace_.readOnly() ? L"Somente leitura" : L"Alterações permitidas");
-    modeButton_.setColour (juce::TextButton::buttonColourId,
-                           workspace_.readOnly() ? colours::brand.brighter (0.15f) : colours::warning);
+    modeButton_.setButtonText (workspace_.readOnly() ? L"Somente leitura" : L"Edição liberada");
+    modeButton_.setIcon (workspace_.readOnly() ? Icon::lock : Icon::unlock);
+    modeButton_.setStyle (workspace_.readOnly() ? ActionButton::Style::header : ActionButton::Style::headerAccent);
+    modeButton_.setTooltip (workspace_.readOnly() ? L"Clique para permitir que o Playlist Control grave nos arquivos"
+                                                  : L"Clique para voltar ao modo somente leitura");
     resized();
 }
 
@@ -218,54 +221,73 @@ int MainComponent::problemCount (ViewId id) const
     }
 }
 
+juce::Rectangle<float> MainComponent::statusChipArea() const
+{
+    auto b = modeButton_.getBounds().toFloat();
+    return { b.getX() - 12.0f - (float) chipWidth, b.getY(), (float) chipWidth, b.getHeight() };
+}
+
 void MainComponent::paintHeader (juce::Graphics& g, juce::Rectangle<int> r)
 {
-    juce::ColourGradient grad (colours::brand, 0.0f, 0.0f, colours::brand.brighter (0.25f), (float) r.getWidth(), 0.0f, false);
+    juce::ColourGradient grad (colours::brand.darker (0.18f), 0.0f, 0.0f, colours::brand.brighter (0.18f), (float) r.getWidth(), 0.0f, false);
     g.setGradientFill (grad);
     g.fillRect (r);
+    g.setColour (juce::Colours::black.withAlpha (0.18f));
+    g.fillRect (r.removeFromBottom (1));
 
-    // Symbol and wordmark of the project logo.
-    auto logo = r.removeFromLeft (sidebarWidth).reduced (14, 0);
+    // Project symbol and wordmark.
+    auto logo = r.removeFromLeft (sidebarWidth).reduced (16, 0);
     static const auto symbol = juce::ImageCache::getFromMemory (PlaylistControlAssets::symbol_png, PlaylistControlAssets::symbol_pngSize);
+    static const auto wordmark = juce::ImageCache::getFromMemory (PlaylistControlAssets::wordmark_png, PlaylistControlAssets::wordmark_pngSize);
     g.setOpacity (1.0f);
-    g.drawImageWithin (symbol, logo.getX(), 11, 36, 36, juce::RectanglePlacement::centred);
-    auto word = logo.withTrimmedLeft (44);
-    auto wordFont = juce::Font (juce::FontOptions ("Segoe UI", 21.0f, juce::Font::bold));
-    auto playlistWidth = juce::GlyphArrangement::getStringWidth (wordFont, "Playlist ");
-    g.setFont (wordFont);
-    g.setColour (juce::Colours::white);
-    g.drawText ("Playlist", word.getX(), 0, (int) playlistWidth + 2, headerHeight, juce::Justification::centredLeft, false);
-    g.setColour (juce::Colour (0xff29c3ff));
-    g.drawText ("Control", word.getX() + (int) playlistWidth, 0, 100, headerHeight, juce::Justification::centredLeft, false);
+    g.drawImageWithin (symbol, logo.getX(), (headerHeight - 40) / 2, 40, 40, juce::RectanglePlacement::centred);
+    auto word = logo.withTrimmedLeft (50).withSizeKeepingCentre (logo.getWidth() - 50, 26);
+    g.drawImageWithin (wordmark, word.getX(), word.getY(), word.getWidth(), word.getHeight(),
+                       juce::RectanglePlacement::xLeft | juce::RectanglePlacement::yMid | juce::RectanglePlacement::onlyReduceInSize);
 
-    auto pill = modeButton_.getBounds().toFloat().translated (-146.0f, 0.0f).withWidth (136.0f);
-    auto info = r.withRight ((int) pill.getX() - 12);
+    // Title of the current view.
+    auto chip = statusChipArea();
+    auto info = r.withRight ((int) chip.getX() - 16).withTrimmedLeft (22);
+    g.setColour (juce::Colours::white.withAlpha (0.14f));
+    g.fillRect (juce::Rectangle<float> ((float) r.getX(), 16.0f, 1.0f, (float) headerHeight - 32.0f));
     g.setColour (juce::Colours::white);
-    g.setFont (font (16.0f, true));
-    g.drawText (view_ != nullptr ? view_->title() : juce::String(), info.removeFromTop (34).withTrimmedTop (8),
+    g.setFont (font (17.0f, true));
+    g.drawText (view_ != nullptr ? view_->title() : juce::String(), info.withHeight (headerHeight / 2 + 3),
                 juce::Justification::bottomLeft, true);
-    g.setColour (juce::Colour (0xffbcd0ee));
+    g.setColour (juce::Colour (0xffb4c7e6));
     g.setFont (font (12.5f));
-    juce::String sub = view_ != nullptr ? view_->subtitle() : juce::String();
-    g.drawText (sub, info, juce::Justification::topLeft, true);
+    g.drawText (view_ != nullptr ? view_->subtitle() : juce::String(), info.withTrimmedTop (headerHeight / 2 + 5),
+                juce::Justification::topLeft, true);
 
-    // Playlist Digital running state, like the "No ar" display.
+    // Playlist Digital running state: a status chip, not a button.
     bool running = workspace_.isOpen() && workspace_.runtime().playlistRunning;
-    g.setColour (running ? colours::onAirBack : colours::brand.darker (0.3f));
-    g.fillRoundedRectangle (pill, 5.0f);
-    g.setColour (running ? colours::onAirText : juce::Colour (0xff8ea6c9));
-    g.setFont (font (12.5f, true));
-    g.drawText (running ? "PLAYLIST NO AR" : "PLAYLIST FECHADO", pill, juce::Justification::centred, false);
+    auto dotColour = running ? juce::Colour (0xffff3b30) : juce::Colour (0xff8ea6c9);
+    g.setColour (running ? juce::Colour (0xffff3b30).withAlpha (0.16f) : juce::Colours::black.withAlpha (0.18f));
+    g.fillRoundedRectangle (chip, chip.getHeight() / 2.0f);
+    g.setColour (running ? juce::Colour (0xffff6b61).withAlpha (0.7f) : juce::Colours::white.withAlpha (0.12f));
+    g.drawRoundedRectangle (chip.reduced (0.5f), chip.getHeight() / 2.0f, 1.0f);
+    auto dot = juce::Rectangle<float> (chip.getX() + 16.0f, chip.getCentreY() - 4.5f, 9.0f, 9.0f);
+    if (running)
+    {
+        g.setColour (dotColour.withAlpha (0.3f));
+        g.fillEllipse (dot.expanded (3.5f));
+    }
+    g.setColour (dotColour);
+    g.fillEllipse (dot);
+    g.setColour (running ? juce::Colour (0xffffd9d6) : juce::Colour (0xffc3d3ea));
+    g.setFont (font (13.0f, true));
+    g.drawText (running ? "Playlist no ar" : "Playlist fechado", chip.withTrimmedLeft (34.0f).withTrimmedRight (12.0f),
+                juce::Justification::centredLeft, false);
 }
 
 void MainComponent::paintSidebar (juce::Graphics& g, juce::Rectangle<int> r)
 {
     g.setColour (colours::panel);
     g.fillRect (r);
-    g.setColour (colours::border);
+    g.setColour (colours::border.withAlpha (0.8f));
     g.drawVerticalLine (r.getRight() - 1, (float) r.getY(), (float) r.getBottom());
 
-    auto a = r.reduced (0, 10);
+    auto a = r.reduced (12, 12);
     juce::String group;
     for (int i = 0; i < (int) nav_.size(); ++i)
     {
@@ -273,37 +295,41 @@ void MainComponent::paintSidebar (juce::Graphics& g, juce::Rectangle<int> r)
         if (item.group != group)
         {
             group = item.group;
-            auto h = a.removeFromTop (30);
-            g.setColour (colours::textMuted);
-            g.setFont (font (11.0f, true).withExtraKerningFactor (0.08f));
-            g.drawText (group.toUpperCase(), h.withTrimmedLeft (18).withTrimmedTop (10), juce::Justification::centredLeft, false);
+            auto h = a.removeFromTop (34);
+            g.setColour (colours::textMuted.withAlpha (0.85f));
+            g.setFont (font (11.0f, true).withExtraKerningFactor (0.1f));
+            g.drawText (toUpperLatin (group), h.withTrimmedLeft (12).withTrimmedTop (12), juce::Justification::centredLeft, false);
         }
-        item.area = a.removeFromTop (34);
+        item.area = a.removeFromTop (38);
+        auto pill = item.area.toFloat().reduced (0.0f, 2.0f);
         bool selected = item.id == current_;
+        bool hover = i == hoverNav_;
         if (selected)
         {
             g.setColour (colours::infoBack);
-            g.fillRect (item.area.reduced (8, 2));
+            g.fillRoundedRectangle (pill, 8.0f);
             g.setColour (colours::brandLight);
-            g.fillRect (item.area.getX() + 8, item.area.getY() + 4, 3, item.area.getHeight() - 8);
+            g.fillRoundedRectangle (juce::Rectangle<float> (pill.getX(), pill.getY() + 8.0f, 3.0f, pill.getHeight() - 16.0f), 1.5f);
         }
-        else if (i == hoverNav_)
+        else if (hover)
         {
             g.setColour (colours::panelAlt);
-            g.fillRect (item.area.reduced (8, 2));
+            g.fillRoundedRectangle (pill, 8.0f);
         }
-        g.setColour (selected ? colours::brand : colours::text);
+        drawIcon (g, item.icon, juce::Rectangle<float> (pill.getX() + 14.0f, pill.getCentreY() - 9.0f, 18.0f, 18.0f),
+                  selected ? colours::brandLight : colours::textMuted, selected ? 1.9f : 1.7f);
+        g.setColour (selected ? colours::brandLight : colours::text);
         g.setFont (font (14.0f, selected));
-        g.drawText (item.label, item.area.withTrimmedLeft (22), juce::Justification::centredLeft, true);
+        g.drawText (item.label, item.area.withTrimmedLeft (44).withTrimmedRight (40), juce::Justification::centredLeft, true);
         auto n = problemCount (item.id);
         if (n > 0)
-            drawBadge (g, item.area.toFloat().removeFromRight (46).withSizeKeepingCentre (30, 18), juce::String (n),
+            drawBadge (g, pill.removeFromRight (40.0f).withSizeKeepingCentre (28.0f, 18.0f), juce::String (n),
                        colours::errorBack, colours::error);
     }
 
-    g.setColour (colours::textMuted);
+    g.setColour (colours::textMuted.withAlpha (0.8f));
     g.setFont (font (11.5f));
-    g.drawText (juce::String (L"versão ") + PLAYLISTCONTROL_VERSION_STRING, r.removeFromBottom (28).withTrimmedLeft (18),
+    g.drawText (juce::String (L"Versão ") + PLAYLISTCONTROL_VERSION_STRING, r.removeFromBottom (34).withTrimmedLeft (24),
                 juce::Justification::centredLeft, false);
 }
 
@@ -312,37 +338,29 @@ void MainComponent::paint (juce::Graphics& g)
     g.fillAll (colours::background);
     auto r = getLocalBounds();
     paintHeader (g, r.removeFromTop (headerHeight));
-    auto status = r.removeFromBottom (statusHeight);
     paintSidebar (g, r.removeFromLeft (sidebarWidth));
-
-    g.setColour (colours::panel);
-    g.fillRect (status);
-    g.setColour (colours::border);
-    g.drawHorizontalLine (status.getY(), 0.0f, (float) getWidth());
-    g.setColour (colours::textMuted);
-    g.setFont (font (12.5f));
-    auto s = status.reduced (12, 0);
-    if (workspace_.isOpen())
-        g.drawText (workspace_.pgm().getFullPathName(), s.removeFromRight (360), juce::Justification::centredRight, true);
-    if (status_.isNotEmpty())
-        g.drawText (statusTime_.formatted ("%H:%M:%S  ") + status_, s, juce::Justification::centredLeft, true);
 }
 
 void MainComponent::resized()
 {
     auto r = getLocalBounds();
-    auto header = r.removeFromTop (headerHeight).reduced (10, 14);
-    reloadButton_.setBounds (header.removeFromRight (96));
-    header.removeFromRight (6);
-    installButton_.setBounds (header.removeFromRight (96));
-    header.removeFromRight (6);
-    modeButton_.setBounds (header.removeFromRight (160));
+    auto header = r.removeFromTop (headerHeight).reduced (14, 0).withSizeKeepingCentre (getWidth() - 28, headerButtonHeight);
+    reloadButton_.setBounds (header.removeFromRight (headerButtonHeight));
+    header.removeFromRight (8);
+    installButton_.setBounds (header.removeFromRight (headerButtonHeight));
+    header.removeFromRight (12);
+    modeButton_.setBounds (header.removeFromRight (juce::jmax (170, modeButton_.preferredWidth (headerButtonHeight))));
 
-    r.removeFromBottom (statusHeight);
     r.removeFromLeft (sidebarWidth);
     banner_.setBounds (r.removeFromTop (banner_.preferredHeight()));
     if (view_ != nullptr)
         view_->setBounds (r);
+    if (toast_.isVisible())
+    {
+        auto w = toast_.preferredWidth();
+        toast_.setBounds (r.getCentreX() - w / 2, r.getBottom() - 64, w, 44);
+        toast_.toFront (false);
+    }
 }
 
 bool MainComponent::keyPressed (const juce::KeyPress& key)

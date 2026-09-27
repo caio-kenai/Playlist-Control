@@ -6,7 +6,8 @@ namespace pc::ui
 {
 
 // Frame of the application: header with installation and program status,
-// navigation on the left, the current view, read-only banner and status bar.
+// navigation on the left, the current view and the read-only banner. Short
+// action feedback appears as a toast over the content.
 class MainComponent : public juce::Component,
                       private juce::ChangeListener,
                       private juce::Timer
@@ -36,12 +37,14 @@ private:
         ViewId id;
         juce::String label;
         juce::String group;
+        Icon icon;
         juce::Rectangle<int> area;
     };
 
     void changeListenerCallback (juce::ChangeBroadcaster*) override;
     void timerCallback() override;
     void setStatus (const juce::String& text);
+    juce::Rectangle<float> statusChipArea() const;
     void updateBanner();
     std::unique_ptr<View> createView (ViewId id);
     int problemCount (ViewId id) const;
@@ -55,9 +58,8 @@ private:
     ViewId current_ = ViewId::dashboard;
     std::unique_ptr<View> view_;
     Banner banner_;
-    juce::TextButton modeButton_, installButton_, reloadButton_;
-    juce::String status_;
-    juce::Time statusTime_;
+    ActionButton modeButton_, installButton_, reloadButton_;
+    Toast toast_;
     int hoverNav_ = -1;
     std::unique_ptr<juce::FileChooser> chooser_;
     juce::TooltipWindow tooltips_ { this, 600 };

@@ -99,7 +99,7 @@ set_target_properties(playlistcontrol_core PROPERTIES FOLDER "PlaylistControl")
 # ---------------------------------------------------------------------------
 # Application
 # ---------------------------------------------------------------------------
-juce_add_binary_data(playlistcontrol_assets NAMESPACE PlaylistControlAssets SOURCES resources/symbol.png)
+juce_add_binary_data(playlistcontrol_assets NAMESPACE PlaylistControlAssets SOURCES resources/symbol.png resources/wordmark.png)
 set_target_properties(playlistcontrol_assets PROPERTIES FOLDER "PlaylistControl")
 
 add_executable(PlaylistControl WIN32 ${PLAYLISTCONTROL_APP_SOURCES} resources/PlaylistControl.rc)

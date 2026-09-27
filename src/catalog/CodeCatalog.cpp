@@ -1,11 +1,12 @@
 #include "catalog/CodeCatalog.h"
+#include "core/TextCase.h"
 
 namespace pc
 {
 
 juce::String CodeCatalog::normalize (const juce::String& code)
 {
-    auto c = code.trim().toUpperCase();
+    auto c = toUpperLatin (code.trim());
     int i = 0;
     while (i < c.length() - 1 && c[i] == '0')
         ++i;

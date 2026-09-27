@@ -142,7 +142,7 @@ LookAndFeel::LookAndFeel()
 
 juce::Font LookAndFeel::getTextButtonFont (juce::TextButton&, int buttonHeight)
 {
-    return font (juce::jmin (15.0f, (float) buttonHeight * 0.52f));
+    return font (juce::jmin (14.0f, (float) buttonHeight * 0.5f), true);
 }
 
 juce::Font LookAndFeel::getLabelFont (juce::Label& l)
@@ -159,17 +159,32 @@ void LookAndFeel::drawButtonBackground (juce::Graphics& g, juce::Button& b, cons
                                         bool highlighted, bool down)
 {
     auto r = b.getLocalBounds().toFloat().reduced (0.5f);
-    auto base = background;
-    if (! b.isEnabled())
-        base = base.withMultipliedSaturation (0.3f).withAlpha (0.6f);
-    else if (down)
-        base = base.darker (0.12f);
+    const float radius = 7.0f;
+    const bool plain = background == colours::panel || background.getAlpha() == 0
+                       || background == findColour (juce::TextButton::buttonColourId);
+    auto base = plain ? colours::panel : background;
+    auto edge = plain ? colours::border : base.darker (0.22f);
+    if (plain && highlighted)
+    {
+        base = colours::panelAlt;
+        edge = colours::brandLight.withAlpha (0.55f);
+    }
     else if (highlighted)
-        base = base.brighter (0.06f).overlaidWith (colours::brandLight.withAlpha (0.06f));
-    g.setColour (base);
-    g.fillRoundedRectangle (r, 4.0f);
-    g.setColour (base == colours::panel ? colours::border : base.darker (0.2f));
-    g.drawRoundedRectangle (r, 4.0f, 1.0f);
+        base = base.brighter (0.1f);
+    if (down)
+        base = base.darker (0.08f);
+    if (! b.isEnabled())
+    {
+        base = base.withMultipliedSaturation (0.3f).withMultipliedAlpha (0.6f);
+        edge = edge.withMultipliedAlpha (0.5f);
+    }
+    if (! plain && b.isEnabled())
+        g.setGradientFill (juce::ColourGradient (base.brighter (0.07f), 0.0f, r.getY(), base.darker (0.07f), 0.0f, r.getBottom(), false));
+    else
+        g.setColour (base);
+    g.fillRoundedRectangle (r, radius);
+    g.setColour (edge);
+    g.drawRoundedRectangle (r, radius, 1.0f);
 }
 
 void LookAndFeel::drawTickBox (juce::Graphics& g, juce::Component& c, float x, float y, float w, float h, bool ticked,
