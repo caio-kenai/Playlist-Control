@@ -164,6 +164,8 @@ def main():
         ("Elei\u00e7\u00f5es", "$", "%PLAYLIST_ROOT%\\Elei\u00e7\u00f5es", "ELEI", 24),
         ("Acervo Antigo", "M", "%PLAYLIST_ROOT%\\Acervo Antigo", "ANTIGO", 25),
     ]
+    # Default icons of the Config Manager for each type (pgm\Icones\Icones5.dll).
+    ICON_INDEX = {"M": 331, "$": 303, "V": 356, "H": 86, "P": 393, "C": 6}
     xml = ['<?xml version="1.0" encoding="utf-8"?>', "<Folders>",
            "  <Folders>%d</Folders>" % len(folders), "  <Version>1.2</Version>",
            "  <Shared>", "    <Folders>1</Folders>", "    <Server>ESTUDIO</Server>",
@@ -179,10 +181,10 @@ def main():
             "    <Title>%s</Title>" % title,
             "    <Type>%s</Type>" % ftype,
             "    <Target>%s</Target>" % target,
-            "    <IconLocation>%%PLAYLIST_ROOT%%\\pgm\\Icones\\Icones5.dll</IconLocation>",
+            "    <IconLocation>%PLAYLIST_ROOT%\\pgm\\Icones\\Icones5.dll</IconLocation>",
             "    <ShortcutArguments>%s</ShortcutArguments>" % args,
             "    <ShortcutPathName>%%PLAYLIST_ROOT%%\\pgm\\Atalhos\\%s.lnk</ShortcutPathName>" % title,
-            "    <IconIndex>0</IconIndex>",
+            "    <IconIndex>%d</IconIndex>" % ICON_INDEX[ftype],
             "    <Output>-1</Output>",
             "    <TotalFiles>0</TotalFiles>",
             "    <DBFId>%s</DBFId>" % code,

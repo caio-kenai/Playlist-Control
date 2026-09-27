@@ -15,10 +15,10 @@
     <Title>Musicas</Title>
     <Type>M</Type>
     <Target>%PLAYLIST_ROOT%\Musicas</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>M</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Musicas.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>331</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>MUSIC</DBFId>
@@ -28,10 +28,10 @@
     <Title>Comerciais</Title>
     <Type>$</Type>
     <Target>%PLAYLIST_ROOT%\Comerciais</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>$</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Comerciais.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>303</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>COM</DBFId>
@@ -41,10 +41,10 @@
     <Title>Vinhetas</Title>
     <Type>V</Type>
     <Target>%PLAYLIST_ROOT%\Vinhetas</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>V</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Vinhetas.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>356</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>VH</DBFId>
@@ -54,10 +54,10 @@
     <Title>Hora Certa</Title>
     <Type>H</Type>
     <Target>%PLAYLIST_ROOT%\Hora Certa</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>H</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Hora Certa.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>86</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>HC</DBFId>
@@ -67,10 +67,10 @@
     <Title>Pausa</Title>
     <Type>P</Type>
     <Target>%PLAYLIST_ROOT%\pgm</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>P</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Pausa.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>393</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>PAUSA</DBFId>
@@ -80,10 +80,10 @@
     <Title>Streaming</Title>
     <Type>C</Type>
     <Target>%PLAYLIST_ROOT%\pgm</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>C URL https://stream.exemplo.local/radio</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Streaming.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>6</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>STREAM</DBFId>
@@ -93,10 +93,10 @@
     <Title>Eleições</Title>
     <Type>$</Type>
     <Target>%PLAYLIST_ROOT%\Eleições</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>$</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Eleições.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>303</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>ELEI</DBFId>
@@ -106,10 +106,10 @@
     <Title>Acervo Antigo</Title>
     <Type>M</Type>
     <Target>%PLAYLIST_ROOT%\Acervo Antigo</Target>
-    <IconLocation>%%PLAYLIST_ROOT%%\pgm\Icones\Icones5.dll</IconLocation>
+    <IconLocation>%PLAYLIST_ROOT%\pgm\Icones\Icones5.dll</IconLocation>
     <ShortcutArguments>M</ShortcutArguments>
     <ShortcutPathName>%PLAYLIST_ROOT%\pgm\Atalhos\Acervo Antigo.lnk</ShortcutPathName>
-    <IconIndex>0</IconIndex>
+    <IconIndex>331</IconIndex>
     <Output>-1</Output>
     <TotalFiles>0</TotalFiles>
     <DBFId>ANTIGO</DBFId>
