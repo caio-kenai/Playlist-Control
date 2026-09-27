@@ -54,13 +54,39 @@ def dbf(fields, records, version=0x03, date=(126, 9, 21)):
     return bytes(out)
 
 
-def ntx(expression, key_size, version=0, pages=1):
+def ntx(expression, key_size, version=0, pages=1, keys=None):
+    """Clipper NTX. With 'keys' (sorted (key bytes, record) pairs that fit in
+    one page) the root page holds them; otherwise the page is empty."""
     header = bytearray(1024)
     item = key_size + 8
     max_items = (1024 - 4) // (item + 2) - 1
     struct.pack_into("<HHIIHHHHH", header, 0, 6, version, 1024, 0, item, key_size, 0, max_items, max_items // 2)
     header[22:22 + len(expression)] = expression.encode("ascii")
-    return bytes(header) + bytes(1024 * pages)
+    body = bytearray(1024 * pages)
+    keys = keys or []
+    assert len(keys) <= max_items
+    base = 2 + (max_items + 1) * 2
+    struct.pack_into("<H", body, 0, len(keys))
+    for i in range(max_items + 1):
+        struct.pack_into("<H", body, 2 + 2 * i, base + i * item)
+    for i, (key, rec) in enumerate(keys):
+        o = base + i * item
+        struct.pack_into("<II", body, o, 0, rec)
+        body[o + 8:o + 8 + key_size] = key.ljust(key_size, b" ")[:key_size]
+    return bytes(header) + bytes(body)
+
+
+def upper1252(data):
+    out = bytearray()
+    for c in data:
+        if 0x61 <= c <= 0x7A or (0xE0 <= c <= 0xFE and c != 0xF7):
+            c -= 0x20
+        out.append(c)
+    return bytes(out)
+
+
+def descend(data):
+    return bytes((256 - c) & 0xFF for c in data)
 
 
 def main():
@@ -205,10 +231,20 @@ def main():
         (False, ["", "20260930", "10:02", "M", "20260930", "10:02:00", "10:05:10", "00:03:10", "Musicas", "Trio Sol - Estrada", "Ana"]),
     ]))
 
-    write("Indices/LIGA_COD.NTX", ntx("CODIGO", 12))
+    # Indexes consistent with the tables, except LIGA_ARQ.NTX, left stale on
+    # purpose (as after a registration made while the index was not updated).
+    def pad(v, n):
+        return str(v).encode("cp1252").ljust(n)[:n]
+    lig = [(i + 1, v) for i, (deleted, v) in enumerate(records)]
+    cod = sorted((pad(v[0], 12), r) for r, v in lig)
+    write("Indices/LIGA_COD.NTX", ntx("CODIGO", 12, keys=cod))
     write("Indices/LIGA_ARQ.NTX", ntx("UPPER(ARQUIVO)", 250, version=1, pages=2))
-    write("Indices/COMPROVE-C.NTX", ntx("CODIGO+DTOS(DATA)+BLOCO", 25))
-    write("Indices/COMPROVE-A.NTX", ntx("UPPER(ARQUIVO)+DESCEND(DTOS(DATA))+DESCEND(HORAFIM)", 116, version=2))
+    comp = [(1, ["55", "20260930", "10:00", "Padaria Pao Quente", "10:00:35"]),
+            (2, ["", "20260930", "10:02", "Trio Sol - Estrada", "10:05:10"])]
+    keys_c = sorted((pad(c[0], 12) + c[1].encode() + pad(c[2], 5), r) for r, c in comp)
+    keys_a = sorted((upper1252(pad(c[3], 100)) + descend(c[1].encode()) + descend(pad(c[4], 8)), r) for r, c in comp)
+    write("Indices/COMPROVE-C.NTX", ntx("CODIGO+DTOS(DATA)+BLOCO", 25, keys=keys_c))
+    write("Indices/COMPROVE-A.NTX", ntx("UPPER(ARQUIVO)+DESCEND(DTOS(DATA))+DESCEND(HORAFIM)", 116, version=2, keys=keys_a))
 
     # Maps and grades -------------------------------------------------------
     planner = []

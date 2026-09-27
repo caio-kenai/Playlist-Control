@@ -1,7 +1,7 @@
 #include "TestUtils.h"
 #include "formats/configxml/ConfigXml.h"
 #include "formats/folders/FoldersXml.h"
-#include "formats/ntx/NtxHeader.h"
+#include "formats/ntx/NtxIndex.h"
 #include "formats/operators/OperatorProfile.h"
 #include "install/Installation.h"
 #include "storage/FileIO.h"
@@ -104,11 +104,33 @@ public:
             expect (lig.has_value(), err);
             if (lig.has_value())
                 logMessage ("LIGACAO.DBF: " + juce::String (lig->recordCount()) + " registros.");
+            auto comprove = DbfTable::parse (read (pgm.getChildFile ("Dados/COMPROVE.DBF")), err);
             for (auto& f : pgm.getChildFile ("Indices").findChildFiles (juce::File::findFiles, false, "*.NTX"))
             {
-                auto h = NtxHeader::parse (read (f));
+                auto bytes = read (f);
+                auto h = NtxHeader::parse (bytes);
                 expect (h.valid, f.getFileName() + ": " + h.problem);
-                logMessage (f.getFileName() + ": " + h.keyExpression);
+                auto* table = f.getFileName().startsWithIgnoreCase ("LIGA") ? (lig ? &*lig : nullptr) : (comprove ? &*comprove : nullptr);
+                if (table == nullptr)
+                    continue;
+                auto v = verifyNtx (bytes, *table);
+                logMessage (f.getFileName() + ": " + h.keyExpression + " -> " + v.summary);
+
+                // Rebuilt in memory, compared with the file the Playlist wrote.
+                std::vector<NtxEntry> entries;
+                juce::String e2;
+                if (expectedNtxEntries (h, *table, entries, e2))
+                {
+                    auto rebuilt = buildNtx (h, entries);
+                    int differing = 0;
+                    auto n = juce::jmin (rebuilt.getSize(), bytes.getSize());
+                    for (size_t i = 0; i < n; ++i)
+                        differing += static_cast<const char*> (rebuilt.getData())[i] != static_cast<const char*> (bytes.getData())[i] ? 1 : 0;
+                    logMessage ("   reconstruído: " + juce::String ((int) rebuilt.getSize()) + " bytes, " + juce::String (differing)
+                                + " bytes diferentes do arquivo original"
+                                + (rebuilt.getSize() == bytes.getSize() ? juce::String() : juce::String (" (tamanho diferente)")));
+                    expect (readNtx (rebuilt).entries == readNtx (bytes).entries || ! v.consistent);
+                }
             }
         }
 

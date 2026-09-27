@@ -46,6 +46,8 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/formats/dbf/DbfTable.cpp
     src/formats/ntx/NtxHeader.h
     src/formats/ntx/NtxHeader.cpp
+    src/formats/ntx/NtxIndex.h
+    src/formats/ntx/NtxIndex.cpp
     src/formats/montagem/MontagemFile.h
     src/formats/montagem/MontagemFile.cpp
 
@@ -107,4 +109,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/ValidationTests.cpp
     tests/RealInstallationTests.cpp
     tests/ServiceTests.cpp
+    tests/NtxTests.cpp
 )

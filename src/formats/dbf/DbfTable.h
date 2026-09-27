@@ -3,6 +3,7 @@
 #include "core/TimeOfDay.h"
 
 #include <optional>
+#include <string>
 
 namespace pc
 {
@@ -36,6 +37,7 @@ public:
     int fieldIndex (const juce::String& name) const;
     bool isDeleted (int record) const;
     juce::String getString (int record, int field) const;
+    std::string rawField (int record, int field) const; // bytes as stored
     juce::String getString (int record, const juce::String& field) const;
     std::optional<Date> getDate (int record, int field) const;
     std::optional<Date> getDate (int record, const juce::String& field) const;

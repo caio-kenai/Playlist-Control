@@ -86,6 +86,14 @@ juce::String DbfTable::getString (int record, int field) const
     return decodeWindows1252 (recordPtr (record) + f.offset, (size_t) f.length).trimEnd();
 }
 
+std::string DbfTable::rawField (int record, int field) const
+{
+    if (field < 0 || field >= (int) fields_.size())
+        return {};
+    auto& f = fields_[(size_t) field];
+    return std::string (reinterpret_cast<const char*> (recordPtr (record) + f.offset), (size_t) f.length);
+}
+
 juce::String DbfTable::getString (int record, const juce::String& field) const
 {
     return getString (record, fieldIndex (field));
