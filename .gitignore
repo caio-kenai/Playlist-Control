@@ -79,3 +79,6 @@ out/
 
 # Logo dropped in the root; the tracked copy is assets/logo-master.png
 /logo.png
+
+# Release packages
+dist/
