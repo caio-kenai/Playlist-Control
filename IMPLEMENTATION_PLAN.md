@@ -32,6 +32,8 @@ compilação, testes, revisão e commit.
 | 23 | Interface 2 | botões com ícones, chip de estado do Playlist, menu lateral com ícones e acentos corretos, sem barra de status | concluída |
 | 24 | Afiliadas de rede | tabela nome/endereço/porta no `PLAYLIST.ini`, validação, criação e remoção da seção | concluída |
 | 25 | Recriação de índices | tela Suporte > Índices: conferência, fechar Playlist pela janela, cópia, exclusão, SeparaComprove, reabertura e conferência | concluída |
+| 26 | Fechamento confirmado | resposta automática a "Deseja fechar o programa?"; perguntas não respondidas são canceladas e o Playlist continua aberto | concluída |
+| 27 | Config Manager | estudo do `ConfigManager.exe` numa cópia; tela com o mesmo layout; gravação de `Folders.xml`, atalhos, `LIGACAO.DBF` e `LIGA_*.NTX` com reinício do Playlist (`docs/CONFIG-MANAGER.md`) | concluída |
 
 ## Estratégia de testes
 

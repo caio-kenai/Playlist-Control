@@ -240,11 +240,17 @@ reserializar o documento, para manter indentação, ordem e o formato de vazios.
 | `L` | Locuções |
 | `P` | Pausa |
 | `C` | Comando (`C UDP {PLAY}`, `C URL <url>`, `C COM4: P`, `C LPT1 n`, `C CameraOn`, `C Scene:...`) |
-| vazio | Genérica (Institucional) |
+| `A` | Aleatórias |
+| `S` | Sequenciais |
+| vazio | Outras (ex.: Institucional) |
 
 `DBFId` é o código registrado da pasta; o mesmo código aparece em
-`LIGACAO.DBF` com `TIPO=A` e `ARQUIVO=<Title>.lnk` [ARQ]. O log mostra que o
-Config Manager atualiza os três lugares numa mesma operação [LOG].
+`LIGACAO.DBF` com `TIPO=A` e `ARQUIVO=<Title>.lnk` [ARQ]. O Config Manager
+atualiza `Folders.xml`, `Atalhos\*.lnk`, `LIGACAO.DBF` e `LIGA_*.NTX` numa mesma
+operação e pede para reiniciar o Playlist [LOG][ARQ]. A tela **Config Manager**
+do Playlist Control faz o mesmo; os detalhes observados (padrões de cada tipo,
+exclusão que mantém o registro, reaproveitamento) estão em
+[docs/CONFIG-MANAGER.md](docs/CONFIG-MANAGER.md).
 
 ### 4.5 LIGACAO.DBF
 
@@ -349,7 +355,7 @@ e oferece recarregar ou comparar. A gravação nunca sobrescreve silenciosamente
 | Mapas, grades, relógios | permitido (o Playlist relê) |
 | `PLAYLIST.ini` | permitido; efeito após reiniciar o Playlist — **PENDENTE** se ele relê |
 | `CONFIG.XML`, `Operadores\*` | bloqueado; o Playlist regrava esses arquivos |
-| `Folders.xml`, `.lnk`, `LIGACAO.DBF` | somente leitura nesta versão |
+| `Folders.xml`, `.lnk`, `LIGACAO.DBF` (pastas) | gravação com o Playlist fechado (a tela Config Manager fecha e reabre) |
 | `Indices\*.NTX` | recriação só com o Playlist fechado (a tela Índices fecha e reabre) |
 
 ### 6.5 Modo somente leitura
@@ -418,7 +424,7 @@ Não há barra de status: avisos de ação aparecem como mensagem flutuante.
 
 Navegação lateral com ícones, em grupos: Painel; Programação (Mapas, Grades,
 Relógios); Configuração (Leitura de mapas — `PLAYLIST.ini`, com afiliadas de
-rede e beep —, Opções do Playlist, Pastas e códigos, Operadores); Suporte
+rede e beep —, Opções do Playlist, Config Manager, Códigos registrados, Operadores); Suporte
 (Diagnóstico, Índices, Histórico). Blocos
 são desenhados como no Playlist: faixa vertical colorida à esquerda com o tipo
 (Comercial/Musical), cabeçalho com data, horário, duração e parâmetros (F, SAT,

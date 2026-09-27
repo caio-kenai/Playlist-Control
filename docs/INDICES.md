@@ -100,9 +100,11 @@ mostra o que impede a operação e pede confirmação explícita.
    só um aviso.
 2. **Fechar o Playlist Digital.** Envia `WM_CLOSE` às janelas do Playlist
    *desta* pasta `pgm`, como o operador faria ao fechar a janela. Nunca encerra o
-   processo à força e não usa teclado ou mouse. Se o Playlist perguntar algo, o
-   operador responde na janela dele. Sem fechar em 90 s, a operação para sem
-   alterar nada.
+   processo à força e não usa teclado ou mouse. A pergunta *"Deseja fechar o
+   programa?"* é respondida com **Sim** pelo botão da própria janela (o
+   operador já confirmou no Playlist Control); outras perguntas ficam para o
+   operador. Sem fechar em 90 s, a pergunta ainda aberta é cancelada, o
+   Playlist continua no ar e a operação para sem alterar nada.
 3. **Guardar cópia.** Copia `Indices\*.NTX`, `Dados\COMPROVE.DBF` e
    `Dados\LIGACAO.DBF` para
    `%LOCALAPPDATA%\PlaylistControl\indices\<data_hora>\` e confere os tamanhos.

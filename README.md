@@ -6,11 +6,11 @@
 
 <p align="center">
   Aplicativo Windows open source feito em <b>JUCE</b> que centraliza a configuração e a operação do <b>Playlist Digital</b>:<br>
-  mapas, grades, relógios, <code>PLAYLIST.ini</code>, opções, pastas, índices e diagnóstico — com gravação segura e histórico.
+  mapas, grades, relógios, <code>PLAYLIST.ini</code>, opções, pastas do Config Manager, índices e diagnóstico — com gravação segura e histórico.
 </p>
 
 <p align="center">
-  <img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.3.0-29c3ff">
+  <img alt="Versão" src="https://img.shields.io/badge/vers%C3%A3o-0.4.0-29c3ff">
   <img alt="JUCE 9" src="https://img.shields.io/badge/JUCE-9.0.2-8dc63f">
   <img alt="C++20" src="https://img.shields.io/badge/C%2B%2B-20-00599c">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4">
@@ -64,7 +64,10 @@ motivo e a correção.
   procura e se ele existe. **Afiliadas de rede** (`[AFILIADAS]`) em tabela: nome, IP e porta.
 - **Opções do Playlist (`CONFIG.XML`)** agrupadas como em Ferramentas > Opções, com a explicação
   do manual; edição liberada só com o Playlist fechado.
-- **Pastas e códigos**, **operadores** e permissões (consulta).
+- **Config Manager** dentro do Playlist Control, com o mesmo layout do original: criar, alterar e
+  remover pastas (título, tipo, diretório, código, ícone de `pgm\Icones`, linha de comando), gravando
+  `Folders.xml`, os atalhos e o registro no `LIGACAO.DBF` e reiniciando o Playlist como ele pede.
+- **Códigos registrados**, **operadores** e permissões (consulta).
 - **Diagnóstico** de toda a instalação, inclusive dos índices `Indices\*.NTX` comparados com as
   tabelas.
 - **Recriação dos índices** guiada: fecha o Playlist pela janela, copia e apaga os índices, executa
@@ -133,23 +136,44 @@ menu por grupos — Programação, Configuração e Suporte.
   elemento XML. Opções cuja correspondência não é explícita no manual são marcadas como
   *correspondência provável*; senhas ficam ocultas; saídas de áudio são somente leitura.
 
-### Pastas, operadores e suporte
+### Config Manager
 
 <p>
-  <img src="docs/screenshots/07-pastas.png" alt="Pastas e códigos" width="420">
-  <img src="docs/screenshots/08-operadores.png" alt="Operadores" width="420">
+  <img src="docs/screenshots/07-config-manager.png" alt="Config Manager" width="860">
 </p>
 <p>
-  <img src="docs/screenshots/09-diagnostico.png" alt="Diagnóstico" width="420">
-  <img src="docs/screenshots/10-indices.png" alt="Índices" width="420">
+  <img src="docs/screenshots/08-config-manager-nova-pasta.png" alt="Nova pasta" width="300">
+  <img src="docs/screenshots/09-config-manager-icone.png" alt="Selecione o ícone" width="366">
+</p>
+
+O mesmo que o `ConfigManager.exe`, sem precisar abri-lo:
+
+| Área | O que faz |
+|---|---|
+| **Salvar / Adicionar / Excluir** | A barra do Config Manager. **Adicionar** abre "Nova pasta" (tipo, com a descrição de cada um) e pede o diretório; **Excluir** pede confirmação. |
+| **Pastas** | Em ícones, agrupadas em Gerais, Comandos, Vinhetas e Músicas, com os ícones reais de `pgm\Icones`. |
+| **Propriedades da pasta selecionada** | Título, Tipo, Diretório, Registrar (código) e o ícone — clique para abrir "Selecione o ícone". Para comandos, a **Linha de comando** (`C UDP {PLAY}`, `C URL …`). |
+| **Salvar** | Valida (títulos, códigos repetidos ou já registrados para outro arquivo, diretórios), copia os arquivos, grava `Folders.xml`, `Atalhos\*.lnk`, `LIGACAO.DBF` e os índices `LIGA_*`, e reinicia o Playlist Digital — a pergunta "Deseja fechar o programa?" é respondida automaticamente. |
+
+Como cada arquivo é gravado está em [docs/CONFIG-MANAGER.md](docs/CONFIG-MANAGER.md).
+
+### Códigos, operadores e suporte
+
+<p>
+  <img src="docs/screenshots/10-codigos.png" alt="Códigos registrados" width="420">
+  <img src="docs/screenshots/11-operadores.png" alt="Operadores" width="420">
 </p>
 <p>
-  <img src="docs/screenshots/11-historico.png" alt="Histórico" width="420">
+  <img src="docs/screenshots/12-diagnostico.png" alt="Diagnóstico" width="420">
+  <img src="docs/screenshots/13-indices.png" alt="Índices" width="420">
+</p>
+<p>
+  <img src="docs/screenshots/14-historico.png" alt="Histórico" width="420">
 </p>
 
 | Tela | O que faz |
 |---|---|
-| **Pastas e códigos** | Pastas do Config Manager (tipo, código, diretório, arquivos), comandos, códigos registrados com validade e onde cada arquivo foi encontrado. |
+| **Códigos registrados** | Pastas (tipo, código, diretório, arquivos), comandos, códigos registrados com validade e onde cada arquivo foi encontrado. |
 | **Operadores** | Permissões de cada operador e o valor efetivo quando a permissão segue o padrão da Guia Geral. |
 | **Diagnóstico** | Todos os problemas, com filtro. Cada um diz o que está errado, onde, por que importa e como resolver; **Abrir no editor** leva ao bloco. |
 | **Índices** | Cada `.NTX` comparado com a tabela (íntegro, não confere, ilegível). **Recriar índices agora** segue o procedimento do suporte, etapa por etapa, com cópia de segurança e aviso quando o Playlist não volta a tocar sozinho. Detalhes em [docs/INDICES.md](docs/INDICES.md). |
@@ -228,7 +252,7 @@ pasta, processos e serviços).
 
 ## Instalação
 
-Baixe o `PlaylistControl-0.3.0-win64.zip` em
+Baixe o `PlaylistControl-0.4.0-win64.zip` em
 [Releases](https://github.com/caio-kenai/PlaylistControl/releases), extraia e execute
 `PlaylistControl.exe`. Não há instalador nem dependências (CRT estático). Confira os arquivos
 com o `SHA256SUMS.txt` da release.
@@ -249,8 +273,8 @@ menu.
 | `Mapas\*.txt`, `Grades\*.txt`, relógios, modelos | sim | sim (o Playlist relê sozinho) |
 | `PLAYLIST.ini` | sim | sim |
 | `CONFIG.XML` | sim | sim, com o Playlist fechado |
-| `Folders.xml`, `Atalhos\*.lnk` (Config Manager) | sim | não |
-| `Dados\LIGACAO.DBF` (registros) | sim | não |
+| `Folders.xml`, `Atalhos\*.lnk` (Config Manager) | sim | sim (tela Config Manager; o Playlist é reiniciado) |
+| `Dados\LIGACAO.DBF` (registros) | sim | só o registro das pastas (`TIPO=A`), junto com o Config Manager |
 | `Operadores\*\Config.xml` | sim | não |
 | `Indices\*.NTX` | sim (verificação) | recriação com o Playlist fechado (Suporte > Índices) |
 | `Montagem\*.merge`, montagens | sim | não |
@@ -262,6 +286,7 @@ menu.
 | Configurações | `%APPDATA%\PlaylistControl\PlaylistControl.settings` |
 | Histórico (cópias de segurança) | `%LOCALAPPDATA%\PlaylistControl\history` |
 | Cópias feitas antes de recriar os índices | `%LOCALAPPDATA%\PlaylistControl\indices` |
+| Cópias feitas antes de gravar as pastas | `%LOCALAPPDATA%\PlaylistControl\pastas` |
 | Log (JSON por linha, um arquivo por dia) | `%LOCALAPPDATA%\PlaylistControl\logs` |
 
 O log registra início e encerramento, arquivos carregados, gravações (com hash antes e depois),
@@ -302,8 +327,8 @@ Verificação somente leitura contra uma instalação real (nada é gravado):
 build-release\bin\playlistcontrol_tests.exe --category=installation --installation=C:\Playlist\pgm
 ```
 
-Recriação dos índices de ponta a ponta, **somente numa cópia de demonstração** (fecha e abre
-programas e apaga arquivos):
+Recriação dos índices e gravação de pastas de ponta a ponta, **somente numa cópia de
+demonstração** (fecha e abre programas e apaga arquivos):
 
 ```powershell
 build-release\bin\playlistcontrol_tests.exe --category=rebuild --rebuild-demo=C:\PlaylistDemo\pgm
@@ -321,12 +346,14 @@ build-release\bin\playlistcontrol_tests.exe --category=rebuild --rebuild-demo=C:
 - **Recriar índices bloqueado**: a tela Índices lista o motivo — Ligacao, Config Manager ou
   SeparaComprove abertos, ou um Playlist rodando como administrador (abra o Playlist Control como
   administrador ou feche o Playlist manualmente).
-- **Muitos "arquivo não encontrado"**: confira no Config Manager se as pastas apontam para os
-  diretórios certos; **Pastas e códigos** mostra onde cada arquivo foi encontrado.
+- **Salvar pastas bloqueado**: feche o `ConfigManager.exe`, o Ligacao e o SeparaComprove; se o
+  aviso for de "Folders.xml alterado por outro programa", recarregue (F5) e refaça a alteração.
+- **Muitos "arquivo não encontrado"**: confira na tela Config Manager se as pastas apontam para os
+  diretórios certos; **Códigos registrados** mostra onde cada arquivo foi encontrado.
 
 ## Limitações
 
-- Pastas, registros e operadores são somente consulta.
+- Registros de arquivos (Registrar / Ligacao.exe) e operadores são somente consulta.
 - A recriação dos índices exige fechar o Playlist; não há forma segura de fazê-la com ele no ar
   ([docs/INDICES.md](docs/INDICES.md)).
 - Pontos do formato ainda não confirmados estão em
