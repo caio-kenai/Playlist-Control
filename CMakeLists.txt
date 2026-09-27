@@ -99,8 +99,14 @@ set_target_properties(playlistcontrol_core PROPERTIES FOLDER "PlaylistControl")
 # ---------------------------------------------------------------------------
 # Application
 # ---------------------------------------------------------------------------
+juce_add_binary_data(playlistcontrol_assets NAMESPACE PlaylistControlAssets SOURCES resources/symbol.png)
+set_target_properties(playlistcontrol_assets PROPERTIES FOLDER "PlaylistControl")
+
 add_executable(PlaylistControl WIN32 ${PLAYLISTCONTROL_APP_SOURCES} resources/PlaylistControl.rc)
-target_link_libraries(PlaylistControl PRIVATE playlistcontrol_core playlistcontrol_options)
+# Ninja does not track files included by .rc scripts.
+set_source_files_properties(resources/PlaylistControl.rc PROPERTIES
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/resources/PlaylistControl.ico")
+target_link_libraries(PlaylistControl PRIVATE playlistcontrol_core playlistcontrol_options playlistcontrol_assets)
 set_target_properties(PlaylistControl PROPERTIES
     FOLDER "PlaylistControl"
     RUNTIME_OUTPUT_DIRECTORY "$<1:${PLAYLISTCONTROL_BIN_DIR}>")

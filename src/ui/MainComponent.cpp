@@ -3,6 +3,7 @@
 #include "ui/views/ViewFactory.h"
 
 #include "Version.h"
+#include <BinaryData.h>
 
 namespace pc::ui
 {
@@ -223,14 +224,19 @@ void MainComponent::paintHeader (juce::Graphics& g, juce::Rectangle<int> r)
     g.setGradientFill (grad);
     g.fillRect (r);
 
-    // Wordmark in the italic, heavy style of the Playlist products.
-    auto logo = r.removeFromLeft (sidebarWidth).reduced (18, 0);
+    // Symbol and wordmark of the project logo.
+    auto logo = r.removeFromLeft (sidebarWidth).reduced (14, 0);
+    static const auto symbol = juce::ImageCache::getFromMemory (PlaylistControlAssets::symbol_png, PlaylistControlAssets::symbol_pngSize);
+    g.setOpacity (1.0f);
+    g.drawImageWithin (symbol, logo.getX(), 11, 36, 36, juce::RectanglePlacement::centred);
+    auto word = logo.withTrimmedLeft (44);
+    auto wordFont = juce::Font (juce::FontOptions ("Segoe UI", 21.0f, juce::Font::bold));
+    auto playlistWidth = juce::GlyphArrangement::getStringWidth (wordFont, "playlist");
+    g.setFont (wordFont);
     g.setColour (juce::Colours::white);
-    g.setFont (juce::Font (juce::FontOptions ("Segoe UI", 24.0f, juce::Font::bold | juce::Font::italic)));
-    g.drawText ("PLAYLIST", logo.removeFromTop (38).withTrimmedTop (8), juce::Justification::bottomLeft, false);
-    g.setColour (juce::Colour (0xffa9c6f2));
-    g.setFont (juce::Font (juce::FontOptions ("Segoe UI", 11.5f, juce::Font::bold)).withExtraKerningFactor (0.35f));
-    g.drawText ("C O N T R O L", logo.removeFromTop (16), juce::Justification::topLeft, false);
+    g.drawText ("playlist", word.getX(), 0, (int) playlistWidth + 2, headerHeight, juce::Justification::centredLeft, false);
+    g.setColour (juce::Colour (0xff29c3ff));
+    g.drawText ("control", word.getX() + (int) playlistWidth, 0, 100, headerHeight, juce::Justification::centredLeft, false);
 
     auto pill = modeButton_.getBounds().toFloat().translated (-146.0f, 0.0f).withWidth (136.0f);
     auto info = r.withRight ((int) pill.getX() - 12);

@@ -1,6 +1,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "logging/Logger.h"
+#include "platform/WinInclude.h"
 #include "services/AppSettings.h"
 #include "services/Workspace.h"
 #include "ui/MainComponent.h"
@@ -25,6 +26,24 @@ public:
         setResizeLimits (1100, 700, 10000, 10000);
         centreWithSize (1440, 900);
         setVisible (true);
+        applyIcon();
+    }
+
+    // The icon resource embedded by PlaylistControl.rc, for the title bar
+    // and the taskbar.
+    void applyIcon()
+    {
+        auto hwnd = static_cast<HWND> (getWindowHandle());
+        if (hwnd == nullptr)
+            return;
+        auto instance = GetModuleHandleW (nullptr);
+        auto load = [instance] (int size) {
+            return static_cast<HICON> (LoadImageW (instance, MAKEINTRESOURCEW (1), IMAGE_ICON, size, size, LR_DEFAULTCOLOR));
+        };
+        if (auto big = load (GetSystemMetrics (SM_CXICON)))
+            SendMessageW (hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM> (big));
+        if (auto small = load (GetSystemMetrics (SM_CXSMICON)))
+            SendMessageW (hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM> (small));
     }
 
     void closeButtonPressed() override
