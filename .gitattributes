@@ -1,0 +1,3 @@
+# Test fixtures reproduce real Playlist files byte for byte (CRLF, CP1252,
+# missing final newline). Git must never convert them.
+tests/fixtures/** -text
