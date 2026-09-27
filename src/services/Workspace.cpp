@@ -307,9 +307,24 @@ DiagnosticList Workspace::runFullDiagnostics() const
     return all;
 }
 
+bool Workspace::busy() const
+{
+    return (indexRebuild_ != nullptr && indexRebuild_->running()) || (folderSave_ != nullptr && folderSave_->running());
+}
+
+FolderSave* Workspace::startFolderSave (FolderPlan plan, bool startPlaylistAtEnd)
+{
+    if (! isOpen() || readOnly() || busy())
+        return nullptr;
+    folderSave_ = std::make_unique<FolderSave> (std::move (plan), installation_.pgm, writer_,
+                                                history_.root().getParentDirectory().getChildFile ("pastas"), startPlaylistAtEnd);
+    folderSave_->start();
+    return folderSave_.get();
+}
+
 IndexRebuild* Workspace::startIndexRebuild (const IndexRebuild::Options& options)
 {
-    if (! isOpen() || readOnly() || (indexRebuild_ != nullptr && indexRebuild_->running()))
+    if (! isOpen() || readOnly() || busy())
         return nullptr;
     indexRebuild_ = std::make_unique<IndexRebuild> (installation_.pgm, history_.root().getParentDirectory().getChildFile ("indices"), options);
     indexRebuild_->start();

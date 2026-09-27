@@ -95,6 +95,19 @@ public:
                 documented += e.field != nullptr ? 1 : 0;
             }
             logMessage ("CONFIG.XML: " + juce::String (documented) + " de " + juce::String (total) + " chaves documentadas.");
+
+            // The folder editor writes Folders.xml back unchanged when nothing changed.
+            auto foldersBytes = read (pgm.getChildFile ("Folders.xml"));
+            auto folders = FoldersXml::parse (foldersBytes, err);
+            expect (folders.has_value(), err);
+            if (folders.has_value())
+            {
+                juce::MemoryBlock rendered;
+                expect (folders->renderBytes (folders->folders(), rendered));
+                expect (rendered == foldersBytes, "Folders.xml");
+                for (auto& f : folders->folders())
+                    expect (f.kind != FolderKind::unknown, f.title + ": " + f.type);
+            }
         }
 
         beginTest ("Data files");

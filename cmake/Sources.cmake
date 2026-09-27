@@ -70,6 +70,10 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/services/FileSession.cpp
     src/services/DirectoryWatcher.h
     src/services/DirectoryWatcher.cpp
+    src/services/PlaylistProcess.h
+    src/services/PlaylistProcess.cpp
+    src/services/FolderConfig.h
+    src/services/FolderConfig.cpp
     src/services/IndexMaintenance.h
     src/services/IndexMaintenance.cpp
     src/services/Workspace.h
@@ -119,4 +123,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/ServiceTests.cpp
     tests/NtxTests.cpp
     tests/IndexRebuildTests.cpp
+    tests/FolderConfigTests.cpp
 )

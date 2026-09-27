@@ -319,6 +319,11 @@ bool XmlPatchDocument::setValue (int index, const juce::String& newValue)
     return ok;
 }
 
+juce::String XmlPatchDocument::textBetween (int start, int end) const
+{
+    return fromU32 (w_, (size_t) juce::jmax (0, start), (size_t) juce::jmax (0, end));
+}
+
 int XmlPatchDocument::lineOf (int index) const
 {
     return lineAt (nodes_[(size_t) index].start);

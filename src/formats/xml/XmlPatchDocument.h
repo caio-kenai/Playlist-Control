@@ -48,6 +48,10 @@ public:
     // children or self-closing elements that cannot be patched.
     bool setValue (int index, const juce::String& newValue);
 
+    // Text between two positions (code point indexes, as in Node).
+    juce::String textBetween (int start, int end) const;
+    juce::String eol() const { return dominantEol(); }
+
     // 1-based line of an element.
     int lineOf (int index) const;
 

@@ -1,6 +1,9 @@
 #include "formats/dbf/DbfTable.h"
 #include "core/TextCodec.h"
 
+#include <algorithm>
+#include <cstring>
+
 namespace pc
 {
 
@@ -113,6 +116,58 @@ std::optional<Date> DbfTable::getDate (int record, int field) const
 std::optional<Date> DbfTable::getDate (int record, const juce::String& field) const
 {
     return getDate (record, fieldIndex (field));
+}
+
+bool DbfTable::setString (int record, int field, const juce::String& value)
+{
+    if (truncated() || record < 0 || record >= recordCount_ || field < 0 || field >= (int) fields_.size())
+        return false;
+    auto& f = fields_[(size_t) field];
+    juce::MemoryBlock encoded;
+    if (! encodeText (value, TextEncoding::windows1252, encoded, nullptr) || (int) encoded.getSize() > f.length)
+        return false;
+    auto* dest = static_cast<juce::uint8*> (data_.getData()) + headerLength_ + record * recordLength_ + f.offset;
+    std::fill (dest, dest + f.length, (juce::uint8) ' ');
+    if (f.type == 'N' || f.type == 'F')
+        std::memcpy (dest + f.length - (int) encoded.getSize(), encoded.getData(), encoded.getSize()); // right-aligned
+    else
+        std::memcpy (dest, encoded.getData(), encoded.getSize());
+    return true;
+}
+
+bool DbfTable::setString (int record, const juce::String& field, const juce::String& value)
+{
+    return setString (record, fieldIndex (field), value);
+}
+
+int DbfTable::appendRecord()
+{
+    if (truncated())
+        return -1;
+    auto end = (size_t) (headerLength_ + recordCount_ * recordLength_);
+    juce::MemoryBlock updated;
+    updated.append (data_.getData(), end);
+    juce::HeapBlock<juce::uint8> blank ((size_t) recordLength_);
+    std::fill (blank.get(), blank.get() + recordLength_, (juce::uint8) ' ');
+    updated.append (blank.get(), (size_t) recordLength_);
+    // Keep whatever followed the records (the 0x1A end marker).
+    if (data_.getSize() > end)
+        updated.append (static_cast<const char*> (data_.getData()) + end, data_.getSize() - end);
+    else
+    {
+        const juce::uint8 eof = 0x1A;
+        updated.append (&eof, 1);
+    }
+    data_ = updated;
+    ++recordCount_;
+    declaredRecords_ = recordCount_;
+    auto* p = static_cast<juce::uint8*> (data_.getData());
+    p[4] = (juce::uint8) (declaredRecords_ & 0xFF);
+    p[5] = (juce::uint8) ((declaredRecords_ >> 8) & 0xFF);
+    p[6] = (juce::uint8) ((declaredRecords_ >> 16) & 0xFF);
+    p[7] = (juce::uint8) ((declaredRecords_ >> 24) & 0xFF);
+    eof_ = data_.getSize() > (size_t) (headerLength_ + recordCount_ * recordLength_);
+    return recordCount_ - 1;
 }
 
 } // namespace pc

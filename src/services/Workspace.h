@@ -5,6 +5,7 @@
 #include "install/Installation.h"
 #include "services/DirectoryWatcher.h"
 #include "services/FileSession.h"
+#include "services/FolderConfig.h"
 #include "services/IndexMaintenance.h"
 #include "validation/Validators.h"
 
@@ -76,6 +77,11 @@ public:
     IndexRebuild* indexRebuild() const noexcept { return indexRebuild_.get(); }
     IndexRebuild* startIndexRebuild (const IndexRebuild::Options& options);
 
+    // Saving the Config Manager folders (Folders.xml, shortcuts, LIGACAO.DBF).
+    FolderSave* folderSave() const noexcept { return folderSave_.get(); }
+    FolderSave* startFolderSave (FolderPlan plan, bool startPlaylistAtEnd);
+    bool busy() const;
+
     SafeWriter& writer() noexcept { return writer_; }
     HistoryStore& history() noexcept { return history_; }
     void setReadOnly (bool readOnly);
@@ -102,11 +108,13 @@ private:
     PlaylistRuntime runtime_;
     DiagnosticList loadProblems_;
     HistoryStore history_;
-    std::unique_ptr<IndexRebuild> indexRebuild_;
     SafeWriter writer_;
     DirectoryWatcher watcher_;
     std::vector<ActivityEntry> activity_;
     std::map<juce::String, juce::Time> ownWrites_;
+    // Last: they use the writer and must stop before it is destroyed.
+    std::unique_ptr<IndexRebuild> indexRebuild_;
+    std::unique_ptr<FolderSave> folderSave_;
 };
 
 } // namespace pc

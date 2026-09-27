@@ -17,7 +17,8 @@ struct DbfField
     int offset = 0; // within the record, after the deletion flag
 };
 
-// Read-only dBase III table (LIGACAO.DBF, COMPROVE.DBF). Text is Windows-1252.
+// dBase III table (LIGACAO.DBF, COMPROVE.DBF). Text is Windows-1252. Edits
+// change the bytes in place, so everything not edited stays as it was.
 class DbfTable
 {
 public:
@@ -41,6 +42,15 @@ public:
     juce::String getString (int record, const juce::String& field) const;
     std::optional<Date> getDate (int record, int field) const;
     std::optional<Date> getDate (int record, const juce::String& field) const;
+
+    // Editing. Character fields are padded with spaces; a value that does
+    // not fit or is not representable in Windows-1252 is refused. Refused
+    // when the table is truncated.
+    bool setString (int record, int field, const juce::String& value);
+    bool setString (int record, const juce::String& field, const juce::String& value);
+    // Adds a blank record (all spaces, not deleted) and returns its index.
+    int appendRecord();
+    const juce::MemoryBlock& bytes() const noexcept { return data_; }
 
 private:
     const juce::uint8* recordPtr (int record) const;
