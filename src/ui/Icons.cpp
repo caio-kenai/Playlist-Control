@@ -103,6 +103,10 @@ juce::Path build (Icon icon)
         case Icon::play:
             p.startNewSubPath (8, 5); p.lineTo (19, 12); p.lineTo (8, 19); p.closeSubPath();
             break;
+        case Icon::tag:
+            p.startNewSubPath (3, 4); p.lineTo (12, 4); p.lineTo (21, 13); p.lineTo (13, 21); p.lineTo (3, 11); p.closeSubPath();
+            p.addEllipse (6.5f, 7.5f, 3.5f, 3.5f);
+            break;
         case Icon::check:
             p.startNewSubPath (5, 12.5f); p.lineTo (10, 17.5f); p.lineTo (19.5f, 6.5f);
             break;

@@ -83,34 +83,34 @@ void ActionButton::paintButton (juce::Graphics& g, bool over, bool down)
 {
     auto r = getLocalBounds().toFloat().reduced (0.5f);
     const float radius = 8.0f;
-    juce::Colour fill, border, text;
+    juce::Colour fill, border, ink;
     switch (style_)
     {
         case Style::primary:
             fill = colours::brandLight;
             border = colours::brandLight.darker (0.25f);
-            text = juce::Colours::white;
+            ink = juce::Colours::white;
             if (over) fill = fill.brighter (0.12f);
             break;
         case Style::secondary:
             fill = over ? colours::panelAlt : colours::panel;
             border = over ? colours::brandLight.withAlpha (0.55f) : colours::border;
-            text = colours::text;
+            ink = colours::text;
             break;
         case Style::danger:
             fill = over ? colours::errorBack.darker (0.03f) : colours::panel;
             border = colours::error.withAlpha (over ? 0.8f : 0.45f);
-            text = colours::error;
+            ink = colours::error;
             break;
         case Style::header:
             fill = juce::Colours::white.withAlpha (over ? 0.16f : 0.08f);
             border = juce::Colours::white.withAlpha (over ? 0.35f : 0.18f);
-            text = juce::Colours::white;
+            ink = juce::Colours::white;
             break;
         case Style::headerAccent:
             fill = juce::Colour (0xffffb020).withAlpha (over ? 0.32f : 0.22f);
             border = juce::Colour (0xffffc452).withAlpha (0.8f);
-            text = juce::Colour (0xffffe2a8);
+            ink = juce::Colour (0xffffe2a8);
             break;
     }
     if (down)
@@ -119,7 +119,7 @@ void ActionButton::paintButton (juce::Graphics& g, bool over, bool down)
     {
         fill = fill.withMultipliedAlpha (0.55f);
         border = border.withMultipliedAlpha (0.5f);
-        text = text.withMultipliedAlpha (0.45f);
+        ink = ink.withMultipliedAlpha (0.45f);
     }
     if (style_ == Style::primary && isEnabled())
     {
@@ -147,12 +147,12 @@ void ActionButton::paintButton (juce::Graphics& g, bool over, bool down)
     auto x = content.getCentreX() - total / 2.0f;
     if (icon_.has_value())
     {
-        drawIcon (g, *icon_, { x, content.getCentreY() - iconSize / 2.0f, iconSize, iconSize }, text, 1.8f);
+        drawIcon (g, *icon_, { x, content.getCentreY() - iconSize / 2.0f, iconSize, iconSize }, ink, 1.8f);
         x += iconSize + 8.0f;
     }
     if (label.isNotEmpty())
     {
-        g.setColour (text);
+        g.setColour (ink);
         g.setFont (font (14.0f, true));
         g.drawText (label, juce::Rectangle<float> (x, 0.0f, textWidth + 2.0f, (float) getHeight()), juce::Justification::centredLeft, false);
     }

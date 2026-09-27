@@ -15,6 +15,7 @@ enum class ViewId
     clocks,
     playlistIni,
     config,
+    configManager,
     folders,
     operators,
     diagnostics,

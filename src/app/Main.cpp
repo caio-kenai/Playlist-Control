@@ -5,6 +5,7 @@
 #include "services/AppSettings.h"
 #include "services/Workspace.h"
 #include "ui/MainComponent.h"
+#include "ui/views/ConfigManagerView.h"
 #include "ui/views/ScheduleView.h"
 
 #include "Version.h"
@@ -78,7 +79,8 @@ int renderScreenshots (const juce::ArgumentList& args)
         { pc::ui::ViewId::clocks, "04-relogios" },
         { pc::ui::ViewId::playlistIni, "05-leitura-de-mapas" },
         { pc::ui::ViewId::config, "06-opcoes" },
-        { pc::ui::ViewId::folders, "07-pastas" },
+        { pc::ui::ViewId::configManager, "07-config-manager" },
+        { pc::ui::ViewId::folders, "07b-codigos" },
         { pc::ui::ViewId::operators, "08-operadores" },
         { pc::ui::ViewId::diagnostics, "09-diagnostico" },
         { pc::ui::ViewId::indexes, "10-indices" },
@@ -122,6 +124,18 @@ int renderScreenshots (const juce::ArgumentList& args)
         juce::FileOutputStream stream (file);
         png.writeImageToStream (image, stream);
     }
+    if (only.isEmpty() || only.contains ("07"))
+        if (workspace.folders().has_value() && ! workspace.folders()->folders().empty())
+        {
+            auto* f = &workspace.folders()->folders().front();
+            for (auto& candidate : workspace.folders()->folders())
+                if (candidate.iconLocation.endsWithIgnoreCase (".dll"))
+                {
+                    f = &candidate;
+                    break;
+                }
+            pc::ui::ConfigManagerView::captureDialogs (pgm, f->iconLocation, f->iconIndex, out);
+        }
     workspace.close();
     temp.deleteRecursively();
     return 0;

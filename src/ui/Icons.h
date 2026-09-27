@@ -28,7 +28,8 @@ enum class Icon
     undo,
     trash,
     play,
-    check
+    check,
+    tag
 };
 
 // Draws the icon stroked in 'colour' inside 'area'.

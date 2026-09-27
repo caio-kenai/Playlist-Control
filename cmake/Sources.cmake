@@ -85,12 +85,16 @@ set(PLAYLISTCONTROL_APP_SOURCES
     src/ui/Theme.h
     src/ui/Theme.cpp
     src/ui/Icons.h
+    src/ui/ShellIcons.h
+    src/ui/ShellIcons.cpp
     src/ui/Icons.cpp
     src/ui/Widgets.h
     src/ui/Widgets.cpp
     src/ui/View.h
     src/ui/MainComponent.h
     src/ui/MainComponent.cpp
+    src/ui/views/ConfigManagerView.h
+    src/ui/views/ConfigManagerView.cpp
     src/ui/views/IndexesView.h
     src/ui/views/IndexesView.cpp
     src/ui/views/ViewFactory.h

@@ -1,4 +1,5 @@
 #include "TestUtils.h"
+#include "services/FolderConfig.h"
 #include "services/IndexMaintenance.h"
 
 namespace pc::test
@@ -42,5 +43,52 @@ public:
 };
 
 static IndexRebuildTests indexRebuildTests;
+
+// Saving the Config Manager folders on a demonstration copy, closing and
+// reopening its Playlist (same option as above).
+class FolderSaveDemoTests : public juce::UnitTest
+{
+public:
+    FolderSaveDemoTests() : juce::UnitTest ("Folder save (demo installation)", "rebuild") {}
+
+    void runTest() override
+    {
+        auto pgm = rebuildDemoUnderTest;
+        if (pgm == juce::File())
+            return;
+
+        beginTest ("A new folder is saved and the Playlist reopened");
+        juce::MemoryBlock foldersBytes, dbf;
+        pgm.getChildFile ("Folders.xml").loadFileAsData (foldersBytes);
+        pgm.getChildFile ("Dados/LIGACAO.DBF").loadFileAsData (dbf);
+        juce::String error;
+        auto folders = FoldersXml::parse (foldersBytes, error);
+        expect (folders.has_value(), error);
+        auto list = folders->folders();
+        auto dir = pgm.getParentDirectory().getChildFile ("Chamadas");
+        dir.createDirectory();
+        list.push_back (makeNewFolder (FolderKind::random, dir, pgm, list, nullptr, folders->nextId()));
+        auto plan = planFolderChanges (pgm, *folders, list, &dbf, juce::Time::getCurrentTime());
+        expect (! plan.problems.hasErrors(), plan.problems.toText());
+
+        HistoryStore history (pgm.getParentDirectory().getChildFile ("demo-history"));
+        SafeWriter writer (history);
+        FolderSave save (std::move (plan), pgm, writer, pgm.getParentDirectory().getChildFile ("folder-backups"), false);
+        save.start();
+        for (int i = 0; i < 1200 && ! save.finished(); ++i)
+            juce::Thread::sleep (100);
+        for (auto& s : save.steps())
+            logMessage ("  [" + juce::String ((int) s.state) + "] " + s.title + " - " + s.detail);
+        logMessage ("Resultado: " + save.outcome());
+        expect (save.succeeded());
+        expect (pgm.getChildFile ("Atalhos/Chamadas.lnk").existsAsFile());
+        juce::MemoryBlock after;
+        pgm.getChildFile ("Folders.xml").loadFileAsData (after);
+        auto reread = FoldersXml::parse (after, error);
+        expect (reread.has_value() && reread->findByCode ("CHA") != nullptr);
+    }
+};
+
+static FolderSaveDemoTests folderSaveDemoTests;
 
 } // namespace pc::test

@@ -11,7 +11,7 @@ class FoldersView : public View
 {
 public:
     explicit FoldersView (AppContext& context);
-    juce::String title() const override { return L"Pastas e códigos"; }
+    juce::String title() const override { return L"Códigos registrados"; }
     juce::String subtitle() const override { return L"Pastas do Config Manager e arquivos registrados (Registrar / Ligacao.exe)"; }
     void refresh() override;
     void paint (juce::Graphics& g) override;
