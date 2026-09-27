@@ -11,6 +11,8 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/core/TextCodec.cpp
     src/core/TimeOfDay.h
     src/core/TimeOfDay.cpp
+    src/core/LineDiff.h
+    src/core/LineDiff.cpp
 
     src/logging/Logger.h
     src/logging/Logger.cpp

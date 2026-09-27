@@ -2,6 +2,7 @@
 #include "core/TextCodec.h"
 #include "core/TimeOfDay.h"
 #include "core/Diagnostic.h"
+#include "core/LineDiff.h"
 
 namespace pc::test
 {
@@ -92,6 +93,23 @@ public:
         {
             expectEquals (toDisplayString (Severity::info), juce::String (juce::CharPointer_UTF8 ("Informa\xc3\xa7\xc3\xa3o")));
             expectEquals (toDisplayString (TextEncoding::utf8Bom), juce::String ("UTF-8 com BOM"));
+        }
+
+        beginTest ("Line diff");
+        {
+            juce::StringArray a { "00:00 VH", "00:15 55", "00:30 23", "00:45 VH" };
+            juce::StringArray b { "00:00 VH", "00:15 55, 12", "00:30 23", "00:45 VH", "01:00" };
+            auto d = diffLines (a, b);
+            int added = 0, removed = 0;
+            for (auto& l : d)
+            {
+                added += l.kind == DiffLine::Kind::added ? 1 : 0;
+                removed += l.kind == DiffLine::Kind::removed ? 1 : 0;
+            }
+            expectEquals (added, 2);
+            expectEquals (removed, 1);
+            expectEquals ((int) compactDiff (d, 0).size(), 3);
+            expect (diffLines (a, a).size() == 4 && compactDiff (diffLines (a, a)).empty());
         }
 
         beginTest ("Date arithmetic");
