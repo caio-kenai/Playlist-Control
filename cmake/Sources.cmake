@@ -57,6 +57,15 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/catalog/CodeCatalog.cpp
     src/validation/Validators.h
     src/validation/Validators.cpp
+
+    src/services/AppSettings.h
+    src/services/AppSettings.cpp
+    src/services/FileSession.h
+    src/services/FileSession.cpp
+    src/services/DirectoryWatcher.h
+    src/services/DirectoryWatcher.cpp
+    src/services/Workspace.h
+    src/services/Workspace.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
@@ -74,4 +83,5 @@ set(PLAYLISTCONTROL_TEST_SOURCES
     tests/DataFormatTests.cpp
     tests/ValidationTests.cpp
     tests/RealInstallationTests.cpp
+    tests/ServiceTests.cpp
 )
