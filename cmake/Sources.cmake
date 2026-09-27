@@ -2,6 +2,8 @@
 
 set(PLAYLISTCONTROL_CORE_SOURCES
     src/platform/WinInclude.h
+    src/platform/WindowsSystem.h
+    src/platform/WindowsSystem.cpp
 
     src/core/Diagnostic.h
     src/core/Diagnostic.cpp
@@ -44,6 +46,13 @@ set(PLAYLISTCONTROL_CORE_SOURCES
     src/formats/ntx/NtxHeader.cpp
     src/formats/montagem/MontagemFile.h
     src/formats/montagem/MontagemFile.cpp
+
+    src/install/Installation.h
+    src/install/Installation.cpp
+    src/ecosystem/Ecosystem.h
+    src/ecosystem/Ecosystem.cpp
+    src/ecosystem/Origin.h
+    src/ecosystem/Origin.cpp
 )
 
 set(PLAYLISTCONTROL_APP_SOURCES
