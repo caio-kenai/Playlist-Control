@@ -27,7 +27,7 @@ compilação, testes, revisão e commit.
 | 18 | Histórico | lista, diferença, restauração | concluída |
 | 19 | Testes reais | cópia da `pgm` + leitura da instalação real sem gravar | concluída |
 | 20 | README, Release, publicação | build Release, documentação final, push | concluída |
-| 21 | Índices (tese) | verificador NTX, experimento em cópia, conclusão | |
+| 21 | Índices (tese) | verificador NTX, reconstrução em memória, conclusão em `docs/INDICES.md` | concluída (recriação pela interface pendente de decisão) |
 
 ## Estratégia de testes
 
@@ -66,4 +66,4 @@ compilação, testes, revisão e commit.
 7. Valores de `TIPO` em `LIGACAO.DBF` além de `A` e `C`.
 8. Formato exato do rodízio com letra do Commercial.
 9. Causa do `Merge ... linha 1 inválida` (hipótese: título de pasta).
-10. Comportamento do `SeparaComprove.exe` e recriação de `COMPROVE-*.NTX`.
+10. Comportamento do `SeparaComprove.exe` e recriação de `COMPROVE-*.NTX` (ver `docs/INDICES.md`).

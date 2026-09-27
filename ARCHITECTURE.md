@@ -415,30 +415,11 @@ cadeado, DUR), e as inserções em linhas alternadas.
 
 ---
 
-## 9. Recriação de índices (tese)
+## 9. Recriação de índices
 
-Objetivo solicitado: permitir que o PlaylistControl recrie os índices do
-Playlist. Fica para o fim; esta seção reúne o que já se sabe.
-
-A favor:
-
-- Os índices são Clipper NTX, formato público e estável (cabeçalho de 1024
-  bytes, páginas de 1024 bytes, chave com tamanho fixo) [ARQ].
-- As expressões de chave estão gravadas no próprio cabeçalho e são simples
-  (`CODIGO`, `UPPER(ARQUIVO)`, `DTOS`, `DESCEND`) [ARQ].
-- O próprio Playlist recria `LIGA_*.NTX` ao iniciar [ARQ][LOG]; o caminho mais
-  seguro pode ser simplesmente remover (com backup) os índices com o Playlist
-  fechado e deixá-lo recriar — **PENDENTE** de teste em cópia.
-
-O que falta:
-
-- Saber o que o `SeparaComprove.exe` faz exatamente além do descrito no manual
-  (divisão mensal de `COMPROVE.DBF` e descarte de registros corrompidos) [M-PD].
-- Confirmar se o Playlist recria `COMPROVE-*.NTX` quando ausentes.
-- Confirmar o comportamento de `DESCEND()` para campos caractere no NTX
-  gravado pelo Playlist (complemento de bytes, como no Clipper).
-
-Plano: implementar primeiro o leitor e verificador de NTX (compara o índice com
-o DBF e aponta divergências), testar recriação somente em cópia da pasta com o
-Playlist fechado, e só então decidir entre "remover e deixar o Playlist
-recriar" e "gerar os NTX".
+Analisada em [docs/INDICES.md](docs/INDICES.md). Resumo: os índices NTX foram
+decodificados; reconstruídos a partir das tabelas, `LIGA_COD.NTX` e
+`LIGA_ARQ.NTX` ficam idênticos byte a byte aos gravados pelo Playlist e os
+`COMPROVE-*.NTX` têm o mesmo conteúdo em outra disposição de páginas. O
+Diagnóstico já verifica todos os índices; a recriação pela interface depende
+das decisões listadas no documento.
