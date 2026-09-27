@@ -73,13 +73,12 @@ private:
 };
 
 // Block duration from DUR. "3:00" is minutes:seconds (manual); a bare number
-// is interpreted as seconds (Planner writes DUR=300 for 5-minute blocks),
-// which is not yet confirmed.
+// is seconds (the Planner writes DUR=300 for its 5-minute blocks).
 struct BlockDuration
 {
     bool valid = false;
     int seconds = 0;
-    bool assumedSeconds = false;
+    bool numeric = false; // bare number of seconds, as the Planner writes
 };
 BlockDuration parseDuration (const juce::String& value);
 juce::String formatDuration (int seconds); // "m:ss"

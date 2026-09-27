@@ -25,7 +25,7 @@ struct PlaylistIniView::SourceEditor : public juce::Component
         pattern.onTextChange = [this] { preview(); };
         addAndMakeVisible (help);
         styleLabel (help, 12.0f, false, colours::textMuted);
-        help.setText (L"Variáveis: %d dia, %m mês, %Y ano (4 dígitos), %y ano (2), %a dia da semana (Seg…Dom), %w número do dia",
+        help.setText (L"Variáveis: %d dia, %m mês, %Y ano (4 dígitos), %y ano (2), %a dia da semana (Seg…Dom), %w número do dia (Seg=1 … Dom=7)",
                       juce::dontSendNotification);
     }
 

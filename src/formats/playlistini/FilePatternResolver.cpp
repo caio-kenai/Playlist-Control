@@ -98,8 +98,8 @@ std::vector<ScheduleCandidate> scheduleCandidates (const ScheduleSource& source,
         {
             add (list, pgm, expandPattern (source.pattern, date), "ARQUIVO=" + source.pattern);
             if (source.pattern.contains ("%w") && dow == 0)
-                add (list, pgm, expandPattern (source.pattern, date, WeekdayNumbering::sundaySeven),
-                     "ARQUIVO=" + source.pattern + " (domingo = 7)", true);
+                add (list, pgm, expandPattern (source.pattern, date, WeekdayNumbering::sundayZero),
+                     "ARQUIVO=" + source.pattern + " (domingo = 0)", true);
         }
         return list;
     }
@@ -120,9 +120,9 @@ std::vector<ScheduleCandidate> scheduleCandidates (const ScheduleSource& source,
             add (list, pgm, "Mapas\\Mapa" + full + ".txt", "AUTO: data completa", assumed);
             add (list, pgm, "Mapas\\Mapa" + dd + ".txt", L"AUTO: dia do mês", assumed);
             add (list, pgm, "Mapas\\" + abbrev + ".txt", "AUTO: dia da semana", assumed);
-            add (list, pgm, "Mapas\\" + juce::String (dow) + ".txt", L"AUTO: número do dia da semana", assumed || dow == 0);
+            add (list, pgm, "Mapas\\" + juce::String (dow == 0 ? 7 : dow) + ".txt", L"AUTO: número do dia da semana", assumed);
             if (dow == 0)
-                add (list, pgm, "Mapas\\7.txt", L"AUTO: número do dia da semana (domingo = 7)", true);
+                add (list, pgm, "Mapas\\0.txt", L"AUTO: número do dia da semana (domingo = 0)", true);
             add (list, pgm, "Mapas\\Mapa.txt", L"AUTO: mapa padrão", assumed);
             break;
         case ScheduleKind::musical:

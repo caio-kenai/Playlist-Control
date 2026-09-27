@@ -48,7 +48,7 @@ OriginAssessment assessScheduleOrigin (const juce::File& file, const ScheduleDoc
         if (l.kind != ScheduleLine::Kind::block)
             continue;
         ++blocks;
-        if (auto d = l.block.params.value ("DUR"); d.has_value() && parseDuration (*d).assumedSeconds)
+        if (auto d = l.block.params.value ("DUR"); d.has_value() && parseDuration (*d).numeric)
             ++numericDur;
         for (auto& it : l.block.items)
         {

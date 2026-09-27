@@ -106,8 +106,8 @@ public:
             expectEquals (expandPattern ("MAPAS\\%d-%m-%Y.TXT", d), juce::String ("MAPAS\\31-12-2021.TXT"));
             expectEquals (expandPattern ("Mapa%d%m%y.txt", d), juce::String ("Mapa311221.txt"));
             expectEquals (expandPattern ("%a|%w", Date { 2021, 12, 29 }), juce::String ("Qua|3"));
-            expectEquals (expandPattern ("%w", Date { 2026, 9, 27 }), juce::String ("0"));
-            expectEquals (expandPattern ("%w", Date { 2026, 9, 27 }, WeekdayNumbering::sundaySeven), juce::String ("7"));
+            expectEquals (expandPattern ("%w", Date { 2026, 9, 27 }), juce::String ("7"));
+            expectEquals (expandPattern ("%w", Date { 2026, 9, 27 }, WeekdayNumbering::sundayZero), juce::String ("0"));
             expectEquals (expandPattern ("%a", Date { 2026, 9, 26 }), juce::String (juce::CharPointer_UTF8 ("S\xc3\xa1" "b")));
             expectEquals (expandPattern ("%d", Date { 2026, 9, 1 }), juce::String ("01"));
             expect (unknownPatternVariables ("MAPAS\\%d%H.txt").contains ("%H"));

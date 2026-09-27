@@ -80,10 +80,10 @@ public:
             expect (blockAt (doc, "10:00").block.params.has ("SAT"));
             expectEquals (blockAt (doc, "09:15").block.params.value ("ID").value_or (""), juce::String ("OUVINTE"));
             auto d = parseDuration (*blockAt (doc, "09:45").block.params.value ("DUR"));
-            expect (d.valid && d.seconds == 180 && ! d.assumedSeconds);
+            expect (d.valid && d.seconds == 180 && ! d.numeric);
             expect (! BlockParams::isKnown ("XYZ"));
             auto s = parseDuration ("300");
-            expect (s.valid && s.seconds == 300 && s.assumedSeconds);
+            expect (s.valid && s.seconds == 300 && s.numeric);
             expect (! parseDuration ("3:5").valid);
             expect (! parseDuration ("abc").valid);
             expectEquals (formatDuration (780), juce::String ("13:00"));

@@ -5,8 +5,10 @@
 namespace pc
 {
 
-// The manual contradicts itself on %w: the text says Sunday = 0, the table
-// lists 1..7 with Sunday = 7. Both are offered until confirmed.
+// The manual contradicts itself on %w: the text says Sunday = 0, the example
+// lists 1.txt (Monday) to 7.txt (Sunday). Sunday = 7 is taken as the rule (the
+// example and the support experience agree); Sunday = 0 is still offered as an
+// alternative until confirmed on a Playlist in test.
 enum class WeekdayNumbering
 {
     sundayZero,
@@ -18,7 +20,7 @@ juce::String weekdayAbbreviation (int dayOfWeekSundayZero);
 
 // Expands %d %m %Y %y %a %w. Unknown variables are kept as written.
 juce::String expandPattern (const juce::String& pattern, const Date& date,
-                            WeekdayNumbering numbering = WeekdayNumbering::sundayZero);
+                            WeekdayNumbering numbering = WeekdayNumbering::sundaySeven);
 
 // Variables in the pattern that the Playlist does not document (e.g. "%H").
 juce::StringArray unknownPatternVariables (const juce::String& pattern);

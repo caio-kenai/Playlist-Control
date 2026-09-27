@@ -226,7 +226,7 @@ BlockDuration parseDuration (const juce::String& value)
         return d;
     d.valid = true;
     d.seconds = v.getIntValue();
-    d.assumedSeconds = true;
+    d.numeric = true;
     return d;
 }
 
