@@ -62,10 +62,21 @@ juce::File resolveRelative (const juce::File& pgm, const juce::String& relative)
     return pgm.getChildFile (normalized);
 }
 
+// The Windows file system ignores case; show the name as it is on disk.
+juce::File withDiskCase (const juce::File& f)
+{
+    if (! f.existsAsFile())
+        return f;
+    for (auto& child : f.getParentDirectory().findChildFiles (juce::File::findFiles, false, f.getFileName()))
+        if (child.getFileName().equalsIgnoreCase (f.getFileName()))
+            return child;
+    return f;
+}
+
 void add (std::vector<ScheduleCandidate>& list, const juce::File& pgm, const juce::String& relative,
           const juce::String& rule, bool uncertain = false)
 {
-    auto f = resolveRelative (pgm, relative);
+    auto f = withDiskCase (resolveRelative (pgm, relative));
     for (auto& c : list)
         if (c.file == f)
             return;
